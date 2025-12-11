@@ -43,6 +43,8 @@ next-env.d.ts
 # Azure deployment
 deploy.zip
 publish-profile.xml
+publish-profile-fixed.xml
+azure-credentials.json
 *.publishsettings
 *.pubxml
 *.azurePubxml
