@@ -160,3 +160,35 @@ export async function downloadMedia(url: string, filename: string) {
   document.body.removeChild(link);
   window.URL.revokeObjectURL(downloadUrl);
 }
+
+/**
+ * Delete a clip
+ */
+export async function deleteXboxClip(authHeader: string, xuid: string, gameClipId: string): Promise<void> {
+  const response = await fetch(`/api/xbox/clips?xuid=${xuid}&gameClipId=${gameClipId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${authHeader}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to delete Xbox clip');
+  }
+}
+
+/**
+ * Delete a screenshot
+ */
+export async function deleteXboxScreenshot(authHeader: string, xuid: string, screenshotId: string): Promise<void> {
+  const response = await fetch(`/api/xbox/screenshots?xuid=${xuid}&screenshotId=${screenshotId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${authHeader}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to delete Xbox screenshot');
+  }
+}
