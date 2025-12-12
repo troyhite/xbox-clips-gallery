@@ -44,7 +44,7 @@ export default function ClipsGrid({ clips }: ClipsGridProps) {
           const videoUri = clip.gameClipUris.find(u => u.uriType === 'Download')?.uri || clip.gameClipUris[0]?.uri;
 
           return (
-            <div key={clip.gameClipId} className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition">
+            <div key={clip.gameClipId} className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition relative">
               <div className="relative aspect-video cursor-pointer group" onClick={() => setSelectedClip(videoUri)}>
                 {thumbnailUri && (
                   <Image

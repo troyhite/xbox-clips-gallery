@@ -128,7 +128,22 @@ export default function ShareButton({ media, mediaType, gamertag }: ShareButtonP
               setShowMenu(false);
             }}
           />
-          <div className="absolute right-0 top-full mt-2 w-56 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-[101] py-2">
+          <div className="fixed bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-[101] py-2 w-56"
+            style={{
+              top: typeof window !== 'undefined' ? 'auto' : undefined,
+              left: typeof window !== 'undefined' ? 'auto' : undefined,
+            }}
+            ref={(node) => {
+              if (node && typeof window !== 'undefined') {
+                const button = node.previousElementSibling?.previousElementSibling as HTMLElement;
+                if (button) {
+                  const rect = button.getBoundingClientRect();
+                  node.style.top = `${rect.bottom + 8}px`;
+                  node.style.left = `${Math.max(8, rect.right - 224)}px`;
+                }
+              }
+            }}
+          >
             <button
               onClick={(e) => {
                 e.stopPropagation();
