@@ -22,9 +22,23 @@ jobs:
       - name: Build Next.js app
         run: npm run build
       
+      - name: Create deployment package
+        run: |
+          mkdir deploy-package
+          cp -r .next deploy-package/
+          cp -r public deploy-package/
+          cp package.json deploy-package/
+          cp package-lock.json deploy-package/
+          cp next.config.ts deploy-package/
+          cp -r node_modules deploy-package/
+          cp -r app deploy-package/
+          cp -r lib deploy-package/
+          cp -r components deploy-package/
+          echo "node_modules" > deploy-package/.deployignore
+      
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'xbox-clips-gallery'
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: .
+          package: ./deploy-package
