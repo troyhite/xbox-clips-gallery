@@ -42,8 +42,32 @@ next-env.d.ts
 
 # Azure deployment
 deploy.zip
+deploy.sh
 publish-profile*.xml
 azure-credentials.json
 *.publishsettings
 *.pubxml
 *.azurePubxml
+scripts/get-publish-profile.ps1
+scripts/fix-deployment.ps1
+scripts/setup-github-actions-auth.ps1
+
+# Local environment files (keep .env.example for documentation)
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Deployment test directories
+test-deploy/
+
+# PM2 ecosystem file (may contain secrets or local configs)
+ecosystem.config.js
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.swp
+*.swo
+*~
