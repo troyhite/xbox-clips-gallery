@@ -91,6 +91,10 @@ export default function Home() {
                         src={profile.displayPicRaw} 
                         alt={`${profile.gamertag}'s profile`}
                         className="w-8 h-8 rounded-full border-2 border-gray-600"
+                        onError={(e) => {
+                          // Fallback to default avatar if image fails to load
+                          (e.target as HTMLImageElement).src = `https://avatar-ssl.xboxlive.com/avatar/${profile.xuid}/avatar-body.png`;
+                        }}
                       />
                     )}
                     <p className="text-gray-400">Welcome, {profile.gamertag}!</p>

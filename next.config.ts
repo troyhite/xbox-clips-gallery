@@ -14,6 +14,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'images-eds-ssl.xboxlive.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'avatar-ssl.xboxlive.com',
+      },
     ],
   },
 };

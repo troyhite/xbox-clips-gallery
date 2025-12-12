@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
 
     // Get Xbox profile
     const response = await fetch(
-      'https://profile.xboxlive.com/users/me/profile/settings?settings=Gamertag,Gamerscore,AccountTier,XboxOneRep,PreferredColor,RealName,Bio,Location,ModernGamertag,ModernGamertagSuffix,UniqueModernGamertag',
+      'https://profile.xboxlive.com/users/me/profile/settings?settings=Gamertag,Gamerscore,AccountTier,XboxOneRep,PreferredColor,RealName,Bio,Location,ModernGamertag,ModernGamertagSuffix,UniqueModernGamertag,GameDisplayPicRaw',
       {
         headers: {
           'Authorization': `XBL3.0 x=${userHash};${token}`,
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       xuid: profileUser.id,
       gamertag: settings.Gamertag || settings.ModernGamertag,
-      displayPicRaw: `https://images-eds-ssl.xboxlive.com/image?url=${profileUser.id}`,
+      displayPicRaw: settings.GameDisplayPicRaw || `https://avatar-ssl.xboxlive.com/avatar/${profileUser.id}/avatar-body.png`,
       gamerscore: settings.Gamerscore,
       accountTier: settings.AccountTier,
       realName: settings.RealName,
