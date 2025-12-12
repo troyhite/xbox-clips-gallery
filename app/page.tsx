@@ -119,38 +119,46 @@ export default function Home() {
             </button>
           </div>
         ) : (
-          <>
-            <StatisticsDashboard clips={clips} screenshots={screenshots} />
-            
-            <div className="flex space-x-4 mb-8 border-b border-gray-700">
-              <button
-                onClick={() => setActiveTab('screenshots')}
-                className={`px-6 py-3 font-semibold transition ${
-                  activeTab === 'screenshots'
-                    ? 'text-blue-500 border-b-2 border-blue-500'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                Screenshots ({screenshots.length})
-              </button>
-              <button
-                onClick={() => setActiveTab('clips')}
-                className={`px-6 py-3 font-semibold transition ${
-                  activeTab === 'clips'
-                    ? 'text-blue-500 border-b-2 border-blue-500'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                Clips ({clips.length})
-              </button>
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Left Sidebar - Statistics */}
+            <div className="lg:w-96 flex-shrink-0">
+              <div className="lg:sticky lg:top-8">
+                <StatisticsDashboard clips={clips} screenshots={screenshots} />
+              </div>
             </div>
 
-            {activeTab === 'screenshots' ? (
-              <ScreenshotGrid screenshots={screenshots} />
-            ) : (
-              <ClipsGrid clips={clips} />
-            )}
-          </>
+            {/* Right Content - Tabs and Grid */}
+            <div className="flex-1 min-w-0">
+              <div className="flex space-x-4 mb-8 border-b border-gray-700">
+                <button
+                  onClick={() => setActiveTab('screenshots')}
+                  className={`px-6 py-3 font-semibold transition ${
+                    activeTab === 'screenshots'
+                      ? 'text-blue-500 border-b-2 border-blue-500'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  Screenshots ({screenshots.length})
+                </button>
+                <button
+                  onClick={() => setActiveTab('clips')}
+                  className={`px-6 py-3 font-semibold transition ${
+                    activeTab === 'clips'
+                      ? 'text-blue-500 border-b-2 border-blue-500'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  Clips ({clips.length})
+                </button>
+              </div>
+
+              {activeTab === 'screenshots' ? (
+                <ScreenshotGrid screenshots={screenshots} />
+              ) : (
+                <ClipsGrid clips={clips} />
+              )}
+            </div>
+          </div>
         )}
       </main>
     </div>
