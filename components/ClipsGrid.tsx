@@ -78,13 +78,13 @@ export default function ClipsGrid({ clips }: ClipsGridProps) {
                       {clip.views?.toLocaleString() || 0} views
                     </span>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="grid grid-cols-3 gap-2">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setDetailsClip(clip);
                       }}
-                      className="flex-1 bg-gray-700 hover:bg-gray-600 text-white text-sm px-3 py-1 rounded transition"
+                      className="bg-gray-700 hover:bg-gray-600 text-white text-sm px-3 py-1 rounded transition"
                       title="View details"
                     >
                       Info
@@ -98,7 +98,8 @@ export default function ClipsGrid({ clips }: ClipsGridProps) {
                       className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded transition"
                       title="Download clip"
                     >
-                      Download
+                      <span className="hidden sm:inline">Download</span>
+                      <span className="sm:hidden">⬇</span>
                     </button>
                   </div>
                 </div>

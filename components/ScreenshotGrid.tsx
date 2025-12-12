@@ -64,13 +64,13 @@ export default function ScreenshotGrid({ screenshots }: ScreenshotGridProps) {
                       {screenshot.views?.toLocaleString() || 0} views
                     </span>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="grid grid-cols-3 gap-2">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setDetailsScreenshot(screenshot);
                       }}
-                      className="flex-1 bg-gray-700 hover:bg-gray-600 text-white text-sm px-3 py-1 rounded transition"
+                      className="bg-gray-700 hover:bg-gray-600 text-white text-sm px-3 py-1 rounded transition"
                       title="View details"
                     >
                       Info
@@ -84,7 +84,8 @@ export default function ScreenshotGrid({ screenshots }: ScreenshotGridProps) {
                       className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded transition"
                       title="Download screenshot"
                     >
-                      Download
+                      <span className="hidden sm:inline">Download</span>
+                      <span className="sm:hidden">⬇</span>
                     </button>
                   </div>
                 </div>
