@@ -61,10 +61,8 @@ export default function StatisticsDashboard({ clips, screenshots }: StatisticsDa
 
   const maxMonthCount = Math.max(...recentMonths.map(m => m[1]), 1);
   const minMonthCount = recentMonths.length > 0 ? Math.min(...recentMonths.map(m => m[1])) : 0;
-  // Better scaling: if all values are similar, use a narrower range for better visual differences
+  // Always use enhanced scaling for better visual differences
   const range = maxMonthCount - minMonthCount;
-  // Use enhanced scaling if the range is small relative to max, or if max is small
-  const useEnhancedScaling = (range > 0 && range < maxMonthCount * 0.5) || maxMonthCount <= 10;
 
   // Get most recent capture
   const allMedia = [...clips, ...screenshots];
@@ -164,32 +162,33 @@ export default function StatisticsDashboard({ clips, screenshots }: StatisticsDa
       {/* Timeline */}
       {recentMonths.length > 0 && (
         <div>
-          <h3 className="text-base font-semibold text-white mb-4">Activity (Last 6 Months)</h3>
+          <h3 className="text-base font-semibold text-white mb-4">
+            Activity (Last 6 Months)
+            <span className="text-xs text-green-400 ml-2">● Enhanced View</span>
+          </h3>
           <div className="bg-gray-900 rounded-lg p-4 border border-gray-700">
             <div className="flex items-end justify-between gap-2 h-48">
               {recentMonths.map(([month, count]) => {
                 const [year, monthNum] = month.split('-');
                 const monthName = new Date(parseInt(year), parseInt(monthNum) - 1).toLocaleDateString('en-US', { month: 'short' });
-                // Enhanced scaling for better visual differences when values are similar
-                let height;
-                if (useEnhancedScaling && range > 0) {
-                  // Scale from 25% to 100% for better visual differences
-                  height = ((count - minMonthCount) / range) * 75 + 25;
-                } else {
-                  height = (count / maxMonthCount) * 100;
-                }
+                // Enhanced scaling: map values from min-max to 40%-100% for better visibility
+                const height = range > 0
+                  ? ((count - minMonthCount) / range) * 60 + 40
+                  : 100;
                 
                 return (
-                  <div key={month} className="flex-1 flex flex-col items-center gap-2">
-                    <div className="w-full flex flex-col items-center justify-end flex-1">
-                      <span className="text-xs text-gray-400 mb-1">{count}</span>
-                      <div 
-                        className="w-full bg-blue-500 rounded-t transition-all duration-500 hover:bg-blue-400"
-                        style={{ height: `${height}%`, minHeight: count > 0 ? '8px' : '0' }}
-                        title={`${count} captures`}
-                      />
+                  <div key={month} className="flex-1 flex flex-col items-center gap-2 h-full">
+                    <div className="w-full flex items-end justify-center h-48">
+                      <div className="flex flex-col items-center w-full">
+                        <span className="text-xs text-gray-400 mb-1">{count}</span>
+                        <div 
+                          className="w-full bg-gradient-to-t from-blue-600 to-blue-400 rounded-t transition-all duration-300"
+                          style={{ height: `${height * 0.48}px` }}
+                          title={`${count} captures`}
+                        />
+                      </div>
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-gray-500 mt-2">
                       <div>{monthName}</div>
                       <div className="text-[10px]">{year}</div>
                     </div>
