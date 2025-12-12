@@ -33,11 +33,15 @@ jobs:
           # Copy standalone build output (optimized for production)
           if [ -d ".next/standalone" ]; then
             echo "Using standalone build output"
-            cp -r .next/standalone/* deploy-package/
-            cp -r .next/static deploy-package/.next/
-            mkdir -p deploy-package/public
+            # Copy the entire standalone directory structure
+            cp -r .next/standalone/. deploy-package/
+            # Copy static files to the correct location
+            mkdir -p deploy-package/.next
+            cp -r .next/static deploy-package/.next/static
+            # Copy public directory if it exists
             if [ -d "public" ]; then
-              cp -r public/* deploy-package/public/ 2>/dev/null || true
+              mkdir -p deploy-package/public
+              cp -r public/. deploy-package/public/
             fi
           else
             echo "Using full build (standalone not found)"
