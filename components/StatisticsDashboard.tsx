@@ -60,6 +60,10 @@ export default function StatisticsDashboard({ clips, screenshots }: StatisticsDa
     .reverse();
 
   const maxMonthCount = Math.max(...recentMonths.map(m => m[1]), 1);
+  const minMonthCount = Math.min(...recentMonths.map(m => m[1]));
+  // Better scaling: if all values are similar, use a narrower range for better visual differences
+  const range = maxMonthCount - minMonthCount;
+  const useEnhancedScaling = range > 0 && range < maxMonthCount * 0.3;
 
   // Get most recent capture
   const allMedia = [...clips, ...screenshots];
@@ -165,7 +169,10 @@ export default function StatisticsDashboard({ clips, screenshots }: StatisticsDa
               {recentMonths.map(([month, count]) => {
                 const [year, monthNum] = month.split('-');
                 const monthName = new Date(parseInt(year), parseInt(monthNum) - 1).toLocaleDateString('en-US', { month: 'short' });
-                const height = (count / maxMonthCount) * 100;
+                // Enhanced scaling for better visual differences when values are similar
+                const height = useEnhancedScaling 
+                  ? ((count - minMonthCount) / range) * 80 + 20 // Scale from 20% to 100%
+                  : (count / maxMonthCount) * 100;
                 
                 return (
                   <div key={month} className="flex-1 flex flex-col items-center gap-2">
