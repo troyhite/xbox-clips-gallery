@@ -8,7 +8,6 @@ interface StatisticsDashboardProps {
 }
 
 export default function StatisticsDashboard({ clips, screenshots }: StatisticsDashboardProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
   // Calculate statistics
   const totalMedia = clips.length + screenshots.length;
   const totalViews = [...clips, ...screenshots].reduce((sum, media) => sum + (media.views || 0), 0);
