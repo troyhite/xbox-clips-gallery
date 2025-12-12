@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { trackEvent, trackException } from '@/lib/appInsights';
 
 export async function GET(request: NextRequest) {
+  const startTime = Date.now();
   try {
+    trackEvent('XboxClips_Started');
     const authHeader = request.headers.get('authorization');
     if (!authHeader) {
       return NextResponse.json({ error: 'Authorization header required' }, { status: 401 });
@@ -35,9 +38,22 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json();
+    const duration = Date.now() - startTime;
+    const clipCount = data.gameClips?.length || 0;
+
+    trackEvent('XboxClips_Success', {
+      duration,
+      clipCount,
+      xuid,
+    });
+
     return NextResponse.json(data);
   } catch (error) {
     console.error('Clips fetch error:', error);
+    trackException(error as Error, {
+      operation: 'XboxClips',
+      duration: Date.now() - startTime,
+    });
     return NextResponse.json(
       { error: 'Failed to fetch Xbox clips' },
       { status: 500 }

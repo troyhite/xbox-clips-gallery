@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { trackEvent, trackException } from '@/lib/appInsights';
 
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
   try {
+    trackEvent('XboxAuth_Started');
     const { accessToken } = await request.json();
 
     if (!accessToken) {
@@ -68,6 +71,12 @@ export async function POST(request: NextRequest) {
 
     const xstsData = await xstsResponse.json();
     const userHash = xstsData.DisplayClaims.xui[0].uhs;
+    const duration = Date.now() - startTime;
+
+    trackEvent('XboxAuth_Success', {
+      duration,
+      gamertag: xstsData.DisplayClaims.xui[0].gtg,
+    });
 
     return NextResponse.json({
       xboxToken: xstsData.Token,
@@ -77,6 +86,10 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Xbox authentication error:', error);
+    trackException(error as Error, {
+      operation: 'XboxAuth',
+      duration: Date.now() - startTime,
+    });
     return NextResponse.json(
       { error: 'Failed to authenticate with Xbox Live' },
       { status: 500 }

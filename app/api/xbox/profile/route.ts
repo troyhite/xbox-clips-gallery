@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { trackEvent, trackException } from '@/lib/appInsights';
 
 export async function GET(request: NextRequest) {
+  const startTime = Date.now();
   try {
+    trackEvent('XboxProfile_Started');
     const authHeader = request.headers.get('authorization');
     if (!authHeader) {
       return NextResponse.json({ error: 'Authorization header required' }, { status: 401 });
@@ -40,6 +43,13 @@ export async function GET(request: NextRequest) {
       return acc;
     }, {});
 
+    const duration = Date.now() - startTime;
+    trackEvent('XboxProfile_Success', {
+      duration,
+      gamertag: settings.Gamertag || settings.ModernGamertag,
+      gamerscore: settings.Gamerscore,
+    });
+
     return NextResponse.json({
       xuid: profileUser.id,
       gamertag: settings.Gamertag || settings.ModernGamertag,
@@ -52,6 +62,10 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Profile fetch error:', error);
+    trackException(error as Error, {
+      operation: 'XboxProfile',
+      duration: Date.now() - startTime,
+    });
     return NextResponse.json(
       { error: 'Failed to fetch Xbox profile' },
       { status: 500 }

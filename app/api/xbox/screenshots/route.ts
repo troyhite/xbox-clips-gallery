@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { trackEvent, trackException } from '@/lib/appInsights';
 
 export async function GET(request: NextRequest) {
+  const startTime = Date.now();
   try {
+    trackEvent('XboxScreenshots_Started');
     const authHeader = request.headers.get('authorization');
     if (!authHeader) {
       return NextResponse.json({ error: 'Authorization header required' }, { status: 401 });
@@ -35,9 +38,22 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json();
+    const duration = Date.now() - startTime;
+    const screenshotCount = data.screenshots?.length || 0;
+
+    trackEvent('XboxScreenshots_Success', {
+      duration,
+      screenshotCount,
+      xuid,
+    });
+
     return NextResponse.json(data);
   } catch (error) {
     console.error('Screenshots fetch error:', error);
+    trackException(error as Error, {
+      operation: 'XboxScreenshots',
+      duration: Date.now() - startTime,
+    });
     return NextResponse.json(
       { error: 'Failed to fetch Xbox screenshots' },
       { status: 500 }
