@@ -81,11 +81,22 @@ export default function Home() {
       <header className="bg-gray-800 shadow-lg">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-white">Xbox Media Gallery</h1>
-              {profile && (
-                <p className="text-gray-400 mt-1">Welcome, {profile.gamertag}!</p>
-              )}
+            <div className="flex items-center gap-4">
+              <div>
+                <h1 className="text-3xl font-bold text-white">Xbox Media Gallery</h1>
+                {profile && (
+                  <div className="flex items-center gap-2 mt-1">
+                    {profile.displayPicRaw && (
+                      <img 
+                        src={profile.displayPicRaw} 
+                        alt={`${profile.gamertag}'s profile`}
+                        className="w-8 h-8 rounded-full border-2 border-gray-600"
+                      />
+                    )}
+                    <p className="text-gray-400">Welcome, {profile.gamertag}!</p>
+                  </div>
+                )}
+              </div>
             </div>
             <AuthButton />
           </div>
