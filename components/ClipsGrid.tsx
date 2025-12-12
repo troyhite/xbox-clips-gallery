@@ -4,6 +4,8 @@ import { XboxClip } from '@/lib/xboxApi';
 import { downloadMedia } from '@/lib/xboxApi';
 import Image from 'next/image';
 import { useState } from 'react';
+import MediaDetailsPanel from './MediaDetailsPanel';
+import ShareButton from './ShareButton';
 
 interface ClipsGridProps {
   clips: XboxClip[];
@@ -11,6 +13,7 @@ interface ClipsGridProps {
 
 export default function ClipsGrid({ clips }: ClipsGridProps) {
   const [selectedClip, setSelectedClip] = useState<string | null>(null);
+  const [detailsClip, setDetailsClip] = useState<XboxClip | null>(null);
 
   if (clips.length === 0) {
     return (
@@ -66,19 +69,38 @@ export default function ClipsGrid({ clips }: ClipsGridProps) {
                 {clip.userCaption && (
                   <p className="text-gray-400 text-sm mt-1 truncate">{clip.userCaption}</p>
                 )}
-                <div className="flex items-center justify-between mt-3">
-                  <span className="text-gray-500 text-xs">
-                    {new Date(clip.dateRecorded).toLocaleDateString()}
-                  </span>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDownload(clip);
-                    }}
-                    className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded transition"
-                  >
-                    Download
-                  </button>
+                <div className="mt-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-500 text-xs">
+                      {new Date(clip.dateRecorded).toLocaleDateString()}
+                    </span>
+                    <span className="text-gray-500 text-xs">
+                      {clip.views?.toLocaleString() || 0} views
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDetailsClip(clip);
+                      }}
+                      className="flex-1 bg-gray-700 hover:bg-gray-600 text-white text-sm px-3 py-1 rounded transition"
+                      title="View details"
+                    >
+                      Info
+                    </button>
+                    <ShareButton media={clip} mediaType="clip" />
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDownload(clip);
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded transition"
+                      title="Download clip"
+                    >
+                      Download
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -108,6 +130,14 @@ export default function ClipsGrid({ clips }: ClipsGridProps) {
             </button>
           </div>
         </div>
+      )}
+
+      {detailsClip && (
+        <MediaDetailsPanel
+          media={detailsClip}
+          mediaType="clip"
+          onClose={() => setDetailsClip(null)}
+        />
       )}
     </>
   );

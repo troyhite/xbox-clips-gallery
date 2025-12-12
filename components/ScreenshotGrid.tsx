@@ -4,6 +4,8 @@ import { XboxScreenshot } from '@/lib/xboxApi';
 import { downloadMedia } from '@/lib/xboxApi';
 import Image from 'next/image';
 import { useState } from 'react';
+import MediaDetailsPanel from './MediaDetailsPanel';
+import ShareButton from './ShareButton';
 
 interface ScreenshotGridProps {
   screenshots: XboxScreenshot[];
@@ -11,6 +13,7 @@ interface ScreenshotGridProps {
 
 export default function ScreenshotGrid({ screenshots }: ScreenshotGridProps) {
   const [selectedScreenshot, setSelectedScreenshot] = useState<string | null>(null);
+  const [detailsScreenshot, setDetailsScreenshot] = useState<XboxScreenshot | null>(null);
 
   if (screenshots.length === 0) {
     return (
@@ -52,16 +55,38 @@ export default function ScreenshotGrid({ screenshots }: ScreenshotGridProps) {
                 {screenshot.userCaption && (
                   <p className="text-gray-400 text-sm mt-1 truncate">{screenshot.userCaption}</p>
                 )}
-                <div className="flex items-center justify-between mt-3">
-                  <span className="text-gray-500 text-xs">
-                    {new Date(screenshot.dateTaken).toLocaleDateString()}
-                  </span>
-                  <button
-                    onClick={() => handleDownload(screenshot)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded transition"
-                  >
-                    Download
-                  </button>
+                <div className="mt-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-500 text-xs">
+                      {new Date(screenshot.dateTaken).toLocaleDateString()}
+                    </span>
+                    <span className="text-gray-500 text-xs">
+                      {screenshot.views?.toLocaleString() || 0} views
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDetailsScreenshot(screenshot);
+                      }}
+                      className="flex-1 bg-gray-700 hover:bg-gray-600 text-white text-sm px-3 py-1 rounded transition"
+                      title="View details"
+                    >
+                      Info
+                    </button>
+                    <ShareButton media={screenshot} mediaType="screenshot" />
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDownload(screenshot);
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded transition"
+                      title="Download screenshot"
+                    >
+                      Download
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -91,6 +116,14 @@ export default function ScreenshotGrid({ screenshots }: ScreenshotGridProps) {
             </button>
           </div>
         </div>
+      )}
+
+      {detailsScreenshot && (
+        <MediaDetailsPanel
+          media={detailsScreenshot}
+          mediaType="screenshot"
+          onClose={() => setDetailsScreenshot(null)}
+        />
       )}
     </>
   );

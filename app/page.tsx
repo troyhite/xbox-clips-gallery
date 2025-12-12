@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import AuthButton from '@/components/AuthButton';
 import ScreenshotGrid from '@/components/ScreenshotGrid';
 import ClipsGrid from '@/components/ClipsGrid';
+import StatisticsDashboard from '@/components/StatisticsDashboard';
 import { getXboxToken, getXboxProfile, getXboxClips, getXboxScreenshots, XboxClip, XboxScreenshot, XboxProfile } from '@/lib/xboxApi';
 import { loginRequest } from '@/lib/msalConfig';
 
@@ -119,6 +120,8 @@ export default function Home() {
           </div>
         ) : (
           <>
+            <StatisticsDashboard clips={clips} screenshots={screenshots} />
+            
             <div className="flex space-x-4 mb-8 border-b border-gray-700">
               <button
                 onClick={() => setActiveTab('screenshots')}
