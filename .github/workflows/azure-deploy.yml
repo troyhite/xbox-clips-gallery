@@ -32,19 +32,22 @@ jobs:
           mkdir deploy-package
           # Copy standalone build output (optimized for production)
           if [ -d ".next/standalone" ]; then
+            echo "Using standalone build output"
             cp -r .next/standalone/* deploy-package/
             cp -r .next/static deploy-package/.next/
             mkdir -p deploy-package/public
-            cp -r public/* deploy-package/public/ 2>/dev/null || true
+            if [ -d "public" ]; then
+              cp -r public/* deploy-package/public/ 2>/dev/null || true
+            fi
           else
-            # Fallback to full build if standalone isn't available
+            echo "Using full build (standalone not found)"
             cp -r .next deploy-package/
             cp -r public deploy-package/
             cp -r node_modules deploy-package/
+            cp package.json deploy-package/
+            cp package-lock.json deploy-package/
+            cp next.config.ts deploy-package/
           fi
-          cp package.json deploy-package/
-          cp package-lock.json deploy-package/
-          cp next.config.ts deploy-package/
       
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
