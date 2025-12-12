@@ -17,8 +17,6 @@ export default function Home() {
   const [profile, setProfile] = useState<XboxProfile | null>(null);
   const [screenshots, setScreenshots] = useState<XboxScreenshot[]>([]);
   const [clips, setClips] = useState<XboxClip[]>([]);
-  const [authHeader, setAuthHeader] = useState<string | null>(null);
-  const [xuid, setXuid] = useState<string | null>(null);
 
   useEffect(() => {
     if (isAuthenticated && accounts.length > 0) {
@@ -50,10 +48,6 @@ export default function Home() {
 
       const { xboxToken, userHash, xuid: userXuid, gamertag } = await xboxAuthResponse.json();
       const authHeaderValue = JSON.stringify({ token: xboxToken, userHash });
-
-      // Store auth data for delete operations
-      setAuthHeader(authHeaderValue);
-      setXuid(userXuid);
 
       // Get profile
       const profileResponse = await fetch('/api/xbox/profile', {
@@ -149,23 +143,9 @@ export default function Home() {
             </div>
 
             {activeTab === 'screenshots' ? (
-              <ScreenshotGrid 
-                screenshots={screenshots}
-                authHeader={authHeader || undefined}
-                xuid={xuid || undefined}
-                onScreenshotDeleted={(screenshotId) => {
-                  setScreenshots(prev => prev.filter(s => s.screenshotId !== screenshotId));
-                }}
-              />
+              <ScreenshotGrid screenshots={screenshots} />
             ) : (
-              <ClipsGrid 
-                clips={clips}
-                authHeader={authHeader || undefined}
-                xuid={xuid || undefined}
-                onClipDeleted={(gameClipId) => {
-                  setClips(prev => prev.filter(c => c.gameClipId !== gameClipId));
-                }}
-              />
+              <ClipsGrid clips={clips} />
             )}
           </>
         )}
