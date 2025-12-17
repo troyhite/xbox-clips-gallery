@@ -84,15 +84,26 @@ async function updateCompilationStatus(
   error?: string
 ) {
   try {
-    const statusUpdateUrl = process.env.NEXT_PUBLIC_BASE_URL 
-      ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/xbox/compilation-status`
-      : '/api/xbox/compilation-status';
+    // For server-side internal calls, we need to use the full URL
+    // In production (Azure App Service), use the deployment URL
+    // In local dev, use localhost
+    const baseUrl = process.env.WEBSITE_HOSTNAME 
+      ? `https://${process.env.WEBSITE_HOSTNAME}`
+      : process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
     
-    await fetch(statusUpdateUrl, {
+    const statusUpdateUrl = `${baseUrl}/api/xbox/compilation-status`;
+    
+    console.log(`Updating compilation status for ${jobId}: ${status} - ${message} (${progress}%)`);
+    
+    const response = await fetch(statusUpdateUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jobId, status, message, progress, videoUrl, error }),
     });
+    
+    if (!response.ok) {
+      console.error(`Failed to update status: ${response.status} ${response.statusText}`);
+    }
   } catch (err) {
     console.error('Failed to update status:', err);
   }
