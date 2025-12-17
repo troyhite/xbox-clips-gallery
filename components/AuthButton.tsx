@@ -31,9 +31,12 @@ export default function AuthButton() {
       ) : (
         <button
           onClick={handleLogin}
-          className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition"
+          className="group inline-flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-800 px-8 py-4 rounded-lg font-semibold text-lg transition-all shadow-xl hover:shadow-2xl border-2 border-gray-200"
         >
-          Sign in with Microsoft
+          <svg className="w-5 h-5" viewBox="0 0 23 23" fill="currentColor">
+            <path d="M0 0h11v11H0zm12 0h11v11H12zM0 12h11v11H0zm12 0h11v11H12z"/>
+          </svg>
+          <span>Sign in with Microsoft</span>
         </button>
       )}
     </div>
