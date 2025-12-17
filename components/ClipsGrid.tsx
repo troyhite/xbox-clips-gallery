@@ -160,51 +160,106 @@ export default function ClipsGrid({ clips }: ClipsGridProps) {
 
   return (
     <>
-      {/* Selection Toolbar */}
-      <div className="mb-4 bg-gray-800 rounded-lg p-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      {/* AI Compilation Feature Banner */}
+      <div className="mb-6 bg-gradient-to-r from-purple-900 to-blue-900 rounded-lg p-6 border border-purple-500">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="text-3xl">🤖✨</div>
+              <h2 className="text-2xl font-bold text-white">AI-Powered Compilation Creator</h2>
+            </div>
+            <p className="text-gray-300 mb-3">
+              Select multiple clips below to create an AI-generated highlight reel! Our AI analyzes your clips to find the best moments and combines them into one epic video.
+            </p>
+            <div className="flex flex-wrap gap-2 text-sm">
+              <span className="bg-purple-700 bg-opacity-50 text-purple-200 px-3 py-1 rounded-full">
+                🎯 Smart scene detection
+              </span>
+              <span className="bg-blue-700 bg-opacity-50 text-blue-200 px-3 py-1 rounded-full">
+                ⚡ Auto-highlight extraction
+              </span>
+              <span className="bg-indigo-700 bg-opacity-50 text-indigo-200 px-3 py-1 rounded-full">
+                🎬 Seamless compilation
+              </span>
+            </div>
+          </div>
+          
+          {/* Create Compilation Button - Always Visible */}
+          <div className="flex flex-col items-end gap-2">
+            <button
+              onClick={selectedClips.size > 0 ? handleAnalyzeMultiple : () => setSelectionMode(true)}
+              disabled={analyzingMultiple}
+              className={`px-8 py-4 rounded-lg font-bold text-lg transition-all transform hover:scale-105 flex items-center gap-3 shadow-lg ${
+                selectedClips.size > 0
+                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white'
+                  : 'bg-gray-700 hover:bg-gray-600 text-white border-2 border-dashed border-gray-500'
+              } disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
+            >
+              {analyzingMultiple ? (
+                <>
+                  <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-white"></div>
+                  <span>Creating Magic...</span>
+                </>
+              ) : selectedClips.size > 0 ? (
+                <>
+                  <span className="text-2xl">🎬</span>
+                  <div className="text-left">
+                    <div>Create Compilation</div>
+                    <div className="text-xs opacity-75">({selectedClips.size} clips selected)</div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <span className="text-2xl">👇</span>
+                  <span>Select Clips Below</span>
+                </>
+              )}
+            </button>
+            
+            {/* Selection Mode Toggle */}
+            {selectedClips.size === 0 && (
+              <button
+                onClick={() => {
+                  setSelectionMode(!selectionMode);
+                  if (selectionMode) {
+                    setSelectedClips(new Set());
+                  }
+                }}
+                className={`px-4 py-2 rounded-lg text-sm transition-all ${
+                  selectionMode
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white ring-2 ring-blue-400'
+                    : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                }`}
+              >
+                {selectionMode ? '✓ Selection Mode Active' : '☐ Enable Selection Mode'}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Selection Status Bar (shown when in selection mode) */}
+      {selectionMode && (
+        <div className="mb-4 bg-blue-900 bg-opacity-30 border border-blue-500 rounded-lg p-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-blue-300 font-semibold">
+              📋 {selectedClips.size} clip{selectedClips.size !== 1 ? 's' : ''} selected
+            </span>
+            {selectedClips.size === 0 && (
+              <span className="text-gray-400 text-sm">Click on clips below to select them</span>
+            )}
+          </div>
           <button
             onClick={() => {
-              setSelectionMode(!selectionMode);
-              if (selectionMode) {
-                setSelectedClips(new Set());
-              }
+              setSelectedClips(new Set());
+              setSelectionMode(false);
             }}
-            className={`px-4 py-2 rounded transition ${
-              selectionMode
-                ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                : 'bg-gray-700 hover:bg-gray-600 text-white'
-            }`}
+            className="text-gray-300 hover:text-white text-sm underline"
           >
-            {selectionMode ? '✓ Selection Mode' : '☐ Select Multiple'}
+            Cancel & Clear
           </button>
-          
-          {selectionMode && (
-            <span className="text-white">
-              {selectedClips.size} clip{selectedClips.size !== 1 ? 's' : ''} selected
-            </span>
-          )}
         </div>
-
-        {selectionMode && selectedClips.size > 0 && (
-          <button
-            onClick={handleAnalyzeMultiple}
-            disabled={analyzingMultiple}
-            className="bg-purple-600 hover:bg-purple-700 disabled:bg-purple-800 disabled:cursor-not-allowed text-white px-6 py-2 rounded transition flex items-center gap-2"
-          >
-            {analyzingMultiple ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
-                Analyzing...
-              </>
-            ) : (
-              <>
-                🤖 Analyze & Create Compilation
-              </>
-            )}
-          </button>
-        )}
-      </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {clips.map((clip) => {
