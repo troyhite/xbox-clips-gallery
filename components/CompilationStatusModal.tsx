@@ -89,8 +89,7 @@ export default function CompilationStatusModal({
             <div className="flex items-center justify-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
             </div>
-          ) : (
-            <bstatusData.status === 'completed' ? (
+          ) : statusData.status === 'completed' ? (
             <div className="space-y-3">
               <div className="bg-green-900 bg-opacity-50 border border-green-700 rounded-lg p-4 text-center">
                 <p className="text-green-400 font-semibold">
@@ -107,12 +106,14 @@ export default function CompilationStatusModal({
                 Got it!
               </button>
             </div>
-          ) : utton
+          ) : (
+            <button
               onClick={onClose}
               className="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition-colors"
             >
               Close
             </button>
+          )}
           )}
         </div>
       </div>
