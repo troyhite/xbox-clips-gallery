@@ -114,7 +114,6 @@ export default function CompilationStatusModal({
               Close
             </button>
           )}
-          )}
         </div>
       </div>
     </div>
