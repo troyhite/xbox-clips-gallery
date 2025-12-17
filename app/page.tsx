@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import AuthButton from '@/components/AuthButton';
 import ScreenshotGrid from '@/components/ScreenshotGrid';
 import ClipsGrid from '@/components/ClipsGrid';
+import CompilationsGrid from '@/components/CompilationsGrid';
 import StatisticsDashboard from '@/components/StatisticsDashboard';
 import { getXboxToken, getXboxProfile, getXboxClips, getXboxScreenshots, XboxClip, XboxScreenshot, XboxProfile } from '@/lib/xboxApi';
 import { loginRequest } from '@/lib/msalConfig';
@@ -12,7 +13,7 @@ import { loginRequest } from '@/lib/msalConfig';
 export default function Home() {
   const { instance, accounts } = useMsal();
   const isAuthenticated = useIsAuthenticated();
-  const [activeTab, setActiveTab] = useState<'screenshots' | 'clips'>('screenshots');
+  const [activeTab, setActiveTab] = useState<'screenshots' | 'clips' | 'compilations'>('screenshots');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [profile, setProfile] = useState<XboxProfile | null>(null);
@@ -165,12 +166,24 @@ export default function Home() {
                 >
                   Clips ({clips.length})
                 </button>
+                <button
+                  onClick={() => setActiveTab('compilations')}
+                  className={`px-6 py-3 font-semibold transition ${
+                    activeTab === 'compilations'
+                      ? 'text-blue-500 border-b-2 border-blue-500'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  Compilations 🎬
+                </button>
               </div>
 
               {activeTab === 'screenshots' ? (
                 <ScreenshotGrid screenshots={screenshots} />
-              ) : (
+              ) : activeTab === 'clips' ? (
                 <ClipsGrid clips={clips} />
+              ) : (
+                <CompilationsGrid />
               )}
             </div>
           </div>

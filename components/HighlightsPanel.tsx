@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import CompilationStatusModal from './CompilationStatusModal';
 
 // Helper function to convert time string to seconds
 function timeToSeconds(time: string): number {
@@ -67,6 +68,8 @@ export default function HighlightsPanel({ videoId, videoUrl, onClose }: Highligh
   const [compilationUrl, setCompilationUrl] = useState<string | null>(null);
   const [creatingCompilation, setCreatingCompilation] = useState(false);
   const [processingProgress, setProcessingProgress] = useState<string>('0%');
+  const [compilationJobId, setCompilationJobId] = useState<string | null>(null);
+  const [showStatusModal, setShowStatusModal] = useState(false);
 
   useEffect(() => {
     let pollInterval: NodeJS.Timeout;
@@ -222,10 +225,11 @@ export default function HighlightsPanel({ videoId, videoUrl, onClose }: Highligh
       }
       
       const data = await response.json();
-      if (data.compilationUrl) {
-        setCompilationUrl(data.compilationUrl);
+      if (data.jobId) {
+        setCompilationJobId(data.jobId);
+        setShowStatusModal(true);
       } else {
-        throw new Error('No compilation URL returned');
+        throw new Error('No job ID returned');
       }
     } catch (err) {
       console.error('Failed to create compilation:', err);
@@ -449,6 +453,19 @@ export default function HighlightsPanel({ videoId, videoUrl, onClose }: Highligh
           </button>
         </div>
       </div>
+
+      <CompilationStatusModal
+        isOpen={showStatusModal}
+        jobId={compilationJobId}
+        onClose={() => {
+          setShowStatusModal(false);
+          setCreatingCompilation(false);
+        }}
+        onComplete={() => {
+          // Compilation completed successfully
+          console.log('Compilation completed!');
+        }}
+      />
     </div>
   );
 }
