@@ -210,12 +210,20 @@ export default function HighlightsPanel({ videoId, videoUrl, onClose }: Highligh
         })
       });
       
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+      }
+      
       const data = await response.json();
       if (data.compilationUrl) {
         setCompilationUrl(data.compilationUrl);
+      } else {
+        throw new Error('No compilation URL returned');
       }
     } catch (err) {
       console.error('Failed to create compilation:', err);
+      alert(`Failed to create compilation: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setCreatingCompilation(false);
     }

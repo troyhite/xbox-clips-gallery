@@ -51,6 +51,8 @@ azure-credentials.json
 scripts/get-publish-profile.ps1
 scripts/fix-deployment.ps1
 scripts/setup-github-actions-auth.ps1
+app-logs/
+app-logs.zip
 
 # Local environment files (keep .env.example for documentation)
 .env.local
