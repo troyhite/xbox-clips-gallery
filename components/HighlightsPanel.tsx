@@ -461,9 +461,9 @@ export default function HighlightsPanel({ videoId, videoUrl, onClose }: Highligh
           setShowStatusModal(false);
           setCreatingCompilation(false);
         }}
-        onComplete={() => {
-          // Compilation completed successfully
-          console.log('Compilation completed!');
+        onComplete={(compilationUrl) => {
+          console.log('Compilation completed!', compilationUrl);
+          // Keep modal open to show success message
         }}
       />
     </div>

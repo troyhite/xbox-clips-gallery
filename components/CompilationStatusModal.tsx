@@ -6,7 +6,7 @@ interface CompilationStatusModalProps {
   isOpen: boolean;
   jobId: string | null;
   onClose: () => void;
-  onComplete: () => void;
+  onComplete: (compilationUrl?: string) => void;
 }
 
 interface StatusUpdate {
@@ -39,14 +39,13 @@ export default function CompilationStatusModal({
           setStatusData(data);
 
           if (data.status === 'completed') {
-            setTimeout(() => {
-              onComplete();
-              onClose();
-            }, 2000);
+            onComplete(data.videoUrl);
+            // Don't auto-close, let user manually close to see success
           } else if (data.status === 'failed') {
+            // Auto-close failed status after 5 seconds
             setTimeout(() => {
               onClose();
-            }, 3000);
+            }, 5000);
           }
         }
       } catch (error) {
@@ -91,7 +90,24 @@ export default function CompilationStatusModal({
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
             </div>
           ) : (
-            <button
+            <bstatusData.status === 'completed' ? (
+            <div className="space-y-3">
+              <div className="bg-green-900 bg-opacity-50 border border-green-700 rounded-lg p-4 text-center">
+                <p className="text-green-400 font-semibold">
+                  🎉 Your compilation is ready!
+                </p>
+                <p className="text-sm text-gray-400 mt-1">
+                  View it in the Compilations tab
+                </p>
+              </div>
+              <button
+                onClick={onClose}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors"
+              >
+                Got it!
+              </button>
+            </div>
+          ) : utton
               onClick={onClose}
               className="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition-colors"
             >
