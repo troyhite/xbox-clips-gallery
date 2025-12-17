@@ -85,12 +85,22 @@ export default function CompilationsGrid() {
 
   const handleDeleteConfirm = async () => {
     try {
-      // Delete selected compilations or single compilation
-      const toDelete = selectedCompilations.size > 0 
-        ? Array.from(selectedCompilations)
-        : compilationToDelete ? [compilationToDelete] : [];
+      // Determine what to delete:
+      // - If we have selected compilations (multi-select mode), delete those
+      // - Otherwise, delete the single compilation (from individual delete button)
+      let toDelete: string[] = [];
+      
+      if (selectedCompilations.size > 0) {
+        // Multi-select deletion
+        toDelete = Array.from(selectedCompilations);
+      } else if (compilationToDelete && !compilationToDelete.includes('compilation')) {
+        // Single deletion (make sure it's not the display text like "2 compilations")
+        toDelete = [compilationToDelete];
+      }
 
       if (toDelete.length === 0) return;
+
+      console.log(`Deleting ${toDelete.length} compilation(s):`, toDelete);
 
       // Delete all selected compilations
       const deletePromises = toDelete.map(name =>
@@ -103,7 +113,18 @@ export default function CompilationsGrid() {
       const failed = results.filter(r => !r.ok);
 
       if (failed.length > 0) {
-        throw new Error(`Failed to delete ${failed.length} compilation(s)`);
+        // Get error details from failed requests
+        const errorDetails = await Promise.all(
+          failed.map(async (r) => {
+            try {
+              const errorData = await r.json();
+              return errorData.error || r.statusText;
+            } catch {
+              return r.statusText;
+            }
+          })
+        );
+        throw new Error(`Failed to delete ${failed.length} compilation(s): ${errorDetails.join(', ')}`);
       }
 
       // Close modal, clear selection, and refresh the list

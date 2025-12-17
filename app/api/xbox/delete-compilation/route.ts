@@ -11,6 +11,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Blob name is required' }, { status: 400 });
     }
 
+    console.log(`Attempting to delete blob: "${blobName}"`);
+
     const storageAccountName = process.env.AZURE_STORAGE_ACCOUNT_NAME;
     const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
 
@@ -33,14 +35,34 @@ export async function DELETE(request: NextRequest) {
     const containerClient = blobServiceClient.getContainerClient('compilations');
     const blobClient = containerClient.getBlobClient(blobName);
 
+    // Check if blob exists first
+    const exists = await blobClient.exists();
+    console.log(`Blob "${blobName}" exists: ${exists}`);
+    
+    if (!exists) {
+      console.warn(`Blob "${blobName}" not found, may have already been deleted`);
+      return NextResponse.json({ 
+        success: true, 
+        message: 'Compilation already deleted or not found' 
+      });
+    }
+
     // Delete the blob
+    console.log(`Deleting blob: "${blobName}"`);
     await blobClient.delete();
+    console.log(`Successfully deleted blob: "${blobName}"`);
 
     return NextResponse.json({ success: true, message: 'Compilation deleted successfully' });
   } catch (error) {
     console.error('Error deleting compilation:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to delete compilation';
+    console.error('Delete error details:', {
+      message: errorMessage,
+      blobName: request.nextUrl.searchParams.get('name'),
+      error: error,
+    });
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to delete compilation' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

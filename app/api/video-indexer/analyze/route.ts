@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     const accessToken = tokenData.accessToken;
 
     // Send video URL to Video Indexer - let it download directly
-    console.log('Submitting video URL to Video Indexer...');
+    console.log('Submitting video URL to Video Indexer with Animation preset...');
     const uploadUrl = new URL(
       `https://api.videoindexer.ai/${location}/Accounts/${accountId}/Videos`
     );
@@ -63,6 +63,7 @@ export async function POST(request: NextRequest) {
     uploadUrl.searchParams.append('name', videoName || 'Xbox Clip');
     uploadUrl.searchParams.append('privacy', 'Private');
     uploadUrl.searchParams.append('indexingPreset', 'AdvancedVideo'); // AI features
+    uploadUrl.searchParams.append('videoAnalyzerPreset', 'Animation'); // Optimized for gaming/animated content
     uploadUrl.searchParams.append('preventDuplicates', 'false'); // Allow re-analysis of same video
     uploadUrl.searchParams.append('videoUrl', videoUrl); // Let Video Indexer download from URL
 
