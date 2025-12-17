@@ -118,6 +118,12 @@ export default function HighlightsPanel({ videoId, videoUrl, onClose }: Highligh
         } else {
           // Single video processing (existing logic)
           const response = await fetch(`/api/video-indexer/insights?videoId=${videoId}`);
+          
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+          }
+          
           const data = await response.json();
           
           console.log('Video Indexer state:', data.state, 'Progress:', data.processingProgress);
@@ -139,7 +145,7 @@ export default function HighlightsPanel({ videoId, videoUrl, onClose }: Highligh
         }
       } catch (err) {
         console.error('Failed to load AI insights:', err);
-        setError('Failed to load AI insights');
+        setError(`Failed to load AI insights: ${err instanceof Error ? err.message : 'Unknown error'}`);
         setLoading(false);
         if (pollInterval) clearInterval(pollInterval);
       }
