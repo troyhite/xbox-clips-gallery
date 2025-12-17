@@ -23,6 +23,12 @@ export default function Home() {
   useEffect(() => {
     if (isAuthenticated && accounts.length > 0) {
       loadXboxData();
+    } else {
+      // Clear data when signed out
+      setProfile(null);
+      setScreenshots([]);
+      setClips([]);
+      setError(null);
     }
   }, [isAuthenticated, accounts]);
 
