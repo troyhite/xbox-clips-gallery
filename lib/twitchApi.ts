@@ -117,6 +117,14 @@ export class TwitchApiClient {
     return response.data || [];
   }
 
+  // Get stream information
+  async getStreams(userId: string): Promise<any[]> {
+    const response = await this.makeRequest<{ data: any[] }>(
+      `/streams?user_id=${userId}`
+    );
+    return response.data || [];
+  }
+
   // Create a clip from a stream
   async createClip(broadcasterId: string): Promise<{ id: string; edit_url: string }> {
     const response = await this.makeRequest<{ data: Array<{ id: string; edit_url: string }> }>(

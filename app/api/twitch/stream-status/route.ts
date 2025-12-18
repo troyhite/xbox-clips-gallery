@@ -26,11 +26,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if user is currently streaming
-    const response = await client.makeRequest(
-      `https://api.twitch.tv/helix/streams?user_id=${user.id}`
-    );
-
-    const streams = response.data || [];
+    const streams = await client.getStreams(user.id);
     const isLive = streams.length > 0;
     const streamData = streams[0] || null;
 
