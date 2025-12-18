@@ -154,16 +154,18 @@ export default function Home() {
                     LIVE
                   </span>
                 </div>
-                {profile && (
-                  <p className="text-gray-300 text-base font-semibold mt-2">
-                    <span className="text-green-400">@</span>{profile.gamertag}
-                  </p>
-                )}
               </div>
             </div>
             
-            {/* Right: Auth Button */}
-            <AuthButton />
+            {/* Right: Gamertag and Auth Button */}
+            <div className="flex items-center gap-4">
+              {profile && (
+                <p className="text-gray-300 text-base font-semibold">
+                  <span className="text-green-400">@</span>{profile.gamertag}
+                </p>
+              )}
+              <AuthButton />
+            </div>
           </div>
         </div>
       </header>
