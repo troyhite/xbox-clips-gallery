@@ -1,4 +1,5 @@
 // Twitch OAuth Configuration
+// Note: NEXT_PUBLIC_ env vars are embedded at build time
 export const twitchConfig = {
   clientId: process.env.NEXT_PUBLIC_TWITCH_CLIENT_ID || '',
   clientSecret: process.env.TWITCH_CLIENT_SECRET || '',
