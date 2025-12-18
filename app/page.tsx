@@ -3,6 +3,7 @@
 import { useMsal, useIsAuthenticated } from '@azure/msal-react';
 import { useState, useEffect } from 'react';
 import AuthButton from '@/components/AuthButton';
+import TwitchAuthButton from '@/components/TwitchAuthButton';
 import ScreenshotGrid from '@/components/ScreenshotGrid';
 import ClipsGrid from '@/components/ClipsGrid';
 import CompilationsGrid from '@/components/CompilationsGrid';
@@ -11,11 +12,14 @@ import RecentGamesCarousel from '@/components/RecentGamesCarousel';
 import StatisticsDashboard from '@/components/StatisticsDashboard';
 import { getXboxToken, getXboxProfile, getXboxClips, getXboxScreenshots, getXboxAchievements, getXboxTitleHistory, XboxClip, XboxScreenshot, XboxProfile, XboxAchievement, XboxTitle } from '@/lib/xboxApi';
 import { loginRequest } from '@/lib/msalConfig';
+import TwitchClipsGrid from '@/components/TwitchClipsGrid';
+import TwitchAnalyticsDashboard from '@/components/TwitchAnalyticsDashboard';
+import LiveStreamMonitor from '@/components/LiveStreamMonitor';
 
 export default function Home() {
   const { instance, accounts } = useMsal();
   const isAuthenticated = useIsAuthenticated();
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'screenshots' | 'clips' | 'compilations' | 'achievements'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'screenshots' | 'clips' | 'twitch-clips' | 'compilations' | 'achievements' | 'analytics' | 'live-stream'>('dashboard');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [profile, setProfile] = useState<XboxProfile | null>(null);
@@ -24,6 +28,9 @@ export default function Home() {
   const [achievements, setAchievements] = useState<XboxAchievement[]>([]);
   const [recentTitles, setRecentTitles] = useState<XboxTitle[]>([]);
   const [compilationsCount, setCompilationsCount] = useState(0);
+  const [twitchConnected, setTwitchConnected] = useState(false);
+  const [twitchClipsCount, setTwitchClipsCount] = useState(0);
+  const [twitchUsername, setTwitchUsername] = useState<string>('');
 
   useEffect(() => {
     if (isAuthenticated && accounts.length > 0) {
@@ -37,7 +44,45 @@ export default function Home() {
       setRecentTitles([]);
       setError(null);
     }
+    // Check Twitch connection on mount
+    loadTwitchData();
   }, [isAuthenticated, accounts]);
+
+  const loadTwitchData = async () => {
+    const twitchToken = localStorage.getItem('twitch_access_token');
+    if (!twitchToken) {
+      setTwitchConnected(false);
+      return;
+    }
+
+    try {
+      // Get Twitch profile
+      const profileResponse = await fetch('/api/twitch/profile', {
+        headers: { 'Authorization': `Bearer ${twitchToken}` },
+      });
+
+      if (profileResponse.ok) {
+        const profile = await profileResponse.json();
+        setTwitchConnected(true);
+        setTwitchUsername(profile.display_name || profile.login);
+
+        // Get Twitch clips count
+        const clipsResponse = await fetch(`/api/twitch/clips?user_id=${profile.id}&first=100`, {
+          headers: { 'Authorization': `Bearer ${twitchToken}` },
+        });
+
+        if (clipsResponse.ok) {
+          const { clips } = await clipsResponse.json();
+          setTwitchClipsCount(clips.length);
+        }
+      } else {
+        setTwitchConnected(false);
+      }
+    } catch (error) {
+      console.error('Error loading Twitch data:', error);
+      setTwitchConnected(false);
+    }
+  };
 
   const loadXboxData = async () => {
     setLoading(true);
@@ -157,13 +202,14 @@ export default function Home() {
               </div>
             </div>
             
-            {/* Right: Gamertag and Auth Button */}
+            {/* Right: Gamertag and Auth Buttons */}
             <div className="flex items-center gap-4">
               {profile && (
                 <p className="text-gray-300 text-base font-semibold">
                   <span className="text-green-400">@</span>{profile.gamertag}
                 </p>
               )}
+              <TwitchAuthButton />
               <AuthButton />
             </div>
           </div>
@@ -328,10 +374,10 @@ export default function Home() {
                   {/* Quick Actions */}
                   <div className="flex flex-wrap gap-3">
                     <button
-                      onClick={() => setActiveTab('clips')}
-                      className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-colors"
+                      onClick={() => setActiveTab('twitch-clips')}
+                      className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-semibold transition-colors"
                     >
-                      🎬 View Clips
+                      🎬 View Twitch Clips
                     </button>
                     <button
                       onClick={() => setActiveTab('screenshots')}
@@ -582,6 +628,40 @@ export default function Home() {
                     </p>
                   </div>
 
+                  {/* Twitch Card */}
+                  <div
+                    onClick={() => setActiveTab(twitchConnected ? 'live-stream' : 'twitch-clips')}
+                    className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl p-6 border border-purple-400 hover:border-purple-300 transition-all cursor-pointer transform hover:scale-105 shadow-xl group relative"
+                  >
+                    {twitchConnected && (
+                      <div className="absolute top-0 right-0 bg-green-500 text-white px-3 py-1 text-xs font-bold rounded-bl-lg flex items-center gap-1">
+                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                        CONNECTED
+                      </div>
+                    )}
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="text-6xl">
+                        <svg className="w-16 h-16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
+                        </svg>
+                      </div>
+                      {twitchConnected && (
+                        <div className="bg-purple-700 text-white px-3 py-1 rounded-full text-sm font-bold">
+                          {twitchClipsCount}
+                        </div>
+                      )}
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-purple-200 transition-colors">
+                      {twitchConnected ? `Twitch` : 'Connect Twitch'}
+                    </h3>
+                    <p className="text-purple-100">
+                      {twitchConnected 
+                        ? `@${twitchUsername} • Monitor streams & create clips`
+                        : 'Link your Twitch account to monitor streams and clips'
+                      }
+                    </p>
+                  </div>
+
                     </div>
                   </div>
                 </div>
@@ -627,7 +707,20 @@ export default function Home() {
                       : 'text-gray-400 hover:text-white'
                   }`}
                 >
-                  Clips ({clips.length})
+                  Xbox Clips ({clips.length})
+                </button>
+                <button
+                  onClick={() => setActiveTab('twitch-clips')}
+                  className={`px-6 py-3 font-semibold transition flex items-center gap-2 ${
+                    activeTab === 'twitch-clips'
+                      ? 'text-purple-500 border-b-2 border-purple-500'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
+                  </svg>
+                  Twitch Clips
                 </button>
                 <button
                   onClick={() => setActiveTab('compilations')}
@@ -649,14 +742,44 @@ export default function Home() {
                 >
                   Achievements ({achievements.length}) 🏆
                 </button>
+                <button
+                  onClick={() => setActiveTab('analytics')}
+                  className={`px-6 py-3 font-semibold transition ${
+                    activeTab === 'analytics'
+                      ? 'text-blue-500 border-b-2 border-blue-500'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  Analytics 📊
+                </button>
+                <button
+                  onClick={() => setActiveTab('live-stream')}
+                  className={`px-6 py-3 font-semibold transition ${
+                    activeTab === 'live-stream'
+                      ? 'text-red-500 border-b-2 border-red-500'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  🔴 Live Stream
+                </button>
               </div>
 
               {activeTab === 'screenshots' ? (
                 <ScreenshotGrid screenshots={screenshots} />
               ) : activeTab === 'clips' ? (
                 <ClipsGrid clips={clips} />
+              ) : activeTab === 'twitch-clips' ? (
+                <TwitchClipsGrid />
               ) : activeTab === 'compilations' ? (
                 <CompilationsGrid />
+              ) : activeTab === 'analytics' ? (
+                <TwitchAnalyticsDashboard 
+                  xboxProfile={profile}
+                  xboxClips={clips}
+                  achievements={achievements}
+                />
+              ) : activeTab === 'live-stream' ? (
+                <LiveStreamMonitor />
               ) : (
                 <AchievementsGrid achievements={achievements} />
               )}
