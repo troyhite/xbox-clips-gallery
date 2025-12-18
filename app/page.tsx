@@ -23,6 +23,7 @@ export default function Home() {
   const [clips, setClips] = useState<XboxClip[]>([]);
   const [achievements, setAchievements] = useState<XboxAchievement[]>([]);
   const [recentTitles, setRecentTitles] = useState<XboxTitle[]>([]);
+  const [compilationsCount, setCompilationsCount] = useState(0);
 
   useEffect(() => {
     if (isAuthenticated && accounts.length > 0) {
@@ -98,6 +99,18 @@ export default function Home() {
       } catch (titlesError) {
         console.error('Could not load title history:', titlesError);
         setRecentTitles([]);
+      }
+
+      // Fetch compilations count
+      try {
+        const compilationsRes = await fetch('/api/xbox/compilations');
+        if (compilationsRes.ok) {
+          const compilationsData = await compilationsRes.json();
+          setCompilationsCount(compilationsData.compilations?.length || 0);
+        }
+      } catch (compilationsError) {
+        console.warn('Could not load compilations count:', compilationsError);
+        setCompilationsCount(0);
       }
     } catch (err) {
       console.error('Error loading Xbox data:', err);
@@ -530,6 +543,9 @@ export default function Home() {
                     </div>
                     <div className="flex items-start justify-between mb-4">
                       <div className="text-6xl">🤖</div>
+                      <div className="bg-pink-600 text-white px-3 py-1 rounded-full text-sm font-bold">
+                        {compilationsCount}
+                      </div>
                     </div>
                     <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-pink-300 transition-colors">
                       Compilations

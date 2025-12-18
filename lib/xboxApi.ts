@@ -114,6 +114,8 @@ export interface XboxTitle {
     totalAchievements: number;
     currentGamerscore: number;
     totalGamerscore: number;
+    progressPercentage?: number;
+    sourceVersion?: number;
   };
   titleHistory?: {
     lastTimePlayed: string;
