@@ -4,13 +4,31 @@ A modern web application built with Next.js that allows users to view and downlo
 
 ## Features
 
+### Dashboard & Navigation
+- 🎮 **Interactive Dashboard** - Modern landing page with quick access to all features
+- 📊 **Game Stats Dashboard** - View detailed statistics for your 6 most recently played games
+  - Achievement progress with visual progress bars
+  - Gamerscore earned (current/total) per game
+  - Completion percentage tracking
+  - Game box art and metadata
+- 🎯 **Recent Activity** - Quick view of your latest 2 screenshots and 2 clips with thumbnails
+- ⚡ **Quick Actions** - One-click navigation to key features:
+  - View Clips
+  - Browse Screenshots
+  - Create AI Compilations
+  - View Achievements
+- 📈 **Feature Cards** - At-a-glance counters for screenshots, clips, compilations, and achievements
+- 👤 **Profile Display** - Large profile picture and gamertag with gamerscore tracking
+
 ### Core Gallery Features
 - 🔐 **Microsoft Account Authentication** - Secure OAuth login using MSAL
 - 📸 **Screenshots Gallery** - Browse and download your Xbox screenshots
 - 🎬 **Video Clips Gallery** - View and download your recorded game clips
+- 🏆 **Achievements Tracking** - View your Xbox achievements and progress
 - 📱 **Responsive Design** - Works seamlessly on desktop and mobile
 - ⬇️ **Easy Downloads** - One-click download for any media
 - 🎮 **Xbox Live Integration** - Direct integration with Xbox Live APIs
+- 📊 **Statistics Dashboard** - Comprehensive gaming statistics and analytics
 
 ### AI-Powered Compilation Features
 - 🤖 **AI Insights & Highlights** - Automatically analyze clips to identify best moments using Azure Video Indexer
@@ -95,14 +113,43 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Usage
 
-### Basic Gallery Usage
+### Getting Started
 
 1. Click **Sign in with Microsoft** button
 2. Authenticate with your Microsoft account that's linked to Xbox
 3. Grant the requested permissions
-4. View your screenshots and clips in the gallery
-5. Click any media to view full size/play video
-6. Use the **Download** button to save media to your device
+4. You'll be taken to the interactive dashboard
+
+### Dashboard Features
+
+The dashboard is your central hub with:
+- **Game Stats Dashboard** - Left sidebar showing your 6 most recently played games with:
+  - Achievement progress bars
+  - Current/total achievements and gamerscore
+  - Completion percentage
+  - Game box art
+- **Recent Activity** - Latest 2 screenshots and 2 clips with clickable thumbnails
+- **Quick Actions** - Four buttons for quick navigation:
+  - 🎬 View Clips
+  - 📸 Browse Screenshots
+  - 🤖 Create AI Compilation
+  - 🏆 View Achievements
+- **Feature Cards** - Overview cards showing:
+  - Total screenshots (with count badge)
+  - Total clips (with count badge)
+  - AI compilations created (with count badge)
+  - Achievement stats
+
+### Basic Gallery Usage
+
+1. Use Quick Actions buttons or feature cards to navigate
+2. **Screenshots Tab**: Browse all your Xbox screenshots
+   - Click any screenshot to view full size
+   - Use the **Download** button to save to your device
+3. **Clips Tab**: View all your recorded game clips
+   - Click any clip to watch the video
+   - Use the **Download** button to save the clip
+4. **Achievements Tab**: View your Xbox achievements and progress
 
 ### AI Compilation Features
 
@@ -137,6 +184,8 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 │   │   │   ├── profile/       # User profile
 │   │   │   ├── clips/         # Game clips
 │   │   │   ├── screenshots/   # Screenshots
+│   │   │   ├── achievements/  # Xbox achievements
+│   │   │   ├── titlehistory/  # Recently played games with stats
 │   │   │   ├── compilations/  # List compilations
 │   │   │   ├── compilation-status/  # Track compilation progress
 │   │   │   ├── download-compilation/  # Proxy downloads
@@ -146,12 +195,14 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 │   │       ├── insights/      # Get AI insights
 │   │       └── create-compilation/  # Generate compilations
 │   ├── layout.tsx         # Root layout with MSAL provider
-│   └── page.tsx          # Main gallery page with tabs
+│   └── page.tsx          # Main dashboard with tabs and Game Stats
 ├── components/
-│   ├── AuthButton.tsx         # Sign in/out button
+│   ├── AuthButton.tsx         # Sign in/out button with profile
 │   ├── ClipsGrid.tsx          # Video clips gallery
 │   ├── ScreenshotGrid.tsx     # Screenshots gallery
 │   ├── CompilationsGrid.tsx   # Compilations gallery with multi-select
+│   ├── AchievementsGrid.tsx   # Xbox achievements display
+│   ├── StatisticsDashboard.tsx # Gaming statistics overview
 │   ├── HighlightsPanel.tsx    # AI insights and compilation creation
 │   ├── CompilationStatusModal.tsx  # Real-time compilation progress
 │   ├── DeleteConfirmationModal.tsx # Custom delete confirmation
