@@ -441,7 +441,7 @@ export default function Home() {
                         >
                           <div className="relative rounded-lg overflow-hidden border-2 border-gray-700 hover:border-blue-500 transition-all">
                             <img
-                              src={screenshot.thumbnails?.[0]?.uri || screenshot.contentLocators?.[0]?.uri}
+                              src={screenshot.thumbnails?.[0]?.uri || screenshot.screenshotUris?.[0]?.uri}
                               alt="Screenshot"
                               className="w-full aspect-video object-cover group-hover:scale-110 transition-transform"
                             />
