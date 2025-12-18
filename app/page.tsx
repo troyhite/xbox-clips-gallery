@@ -7,20 +7,22 @@ import ScreenshotGrid from '@/components/ScreenshotGrid';
 import ClipsGrid from '@/components/ClipsGrid';
 import CompilationsGrid from '@/components/CompilationsGrid';
 import AchievementsGrid from '@/components/AchievementsGrid';
+import RecentGamesCarousel from '@/components/RecentGamesCarousel';
 import StatisticsDashboard from '@/components/StatisticsDashboard';
-import { getXboxToken, getXboxProfile, getXboxClips, getXboxScreenshots, getXboxAchievements, XboxClip, XboxScreenshot, XboxProfile, XboxAchievement } from '@/lib/xboxApi';
+import { getXboxToken, getXboxProfile, getXboxClips, getXboxScreenshots, getXboxAchievements, getXboxTitleHistory, XboxClip, XboxScreenshot, XboxProfile, XboxAchievement, XboxTitle } from '@/lib/xboxApi';
 import { loginRequest } from '@/lib/msalConfig';
 
 export default function Home() {
   const { instance, accounts } = useMsal();
   const isAuthenticated = useIsAuthenticated();
-  const [activeTab, setActiveTab] = useState<'screenshots' | 'clips' | 'compilations' | 'achievements'>('screenshots');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'screenshots' | 'clips' | 'compilations' | 'achievements'>('dashboard');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [profile, setProfile] = useState<XboxProfile | null>(null);
   const [screenshots, setScreenshots] = useState<XboxScreenshot[]>([]);
   const [clips, setClips] = useState<XboxClip[]>([]);
   const [achievements, setAchievements] = useState<XboxAchievement[]>([]);
+  const [recentTitles, setRecentTitles] = useState<XboxTitle[]>([]);
 
   useEffect(() => {
     if (isAuthenticated && accounts.length > 0) {
@@ -31,6 +33,7 @@ export default function Home() {
       setScreenshots([]);
       setClips([]);
       setAchievements([]);
+      setRecentTitles([]);
       setError(null);
     }
   }, [isAuthenticated, accounts]);
@@ -79,13 +82,22 @@ export default function Home() {
       setScreenshots(screenshotsData);
       setClips(clipsData);
       
-      // Try to get achievements (optional - don't fail if it doesn't work)
+      // Try to get achievements and recent titles (optional - don't fail if they don't work)
       try {
         const achievementsData = await getXboxAchievements(authHeaderValue, userXuid);
         setAchievements(achievementsData);
       } catch (achievementsError) {
         console.warn('Could not load achievements:', achievementsError);
         setAchievements([]); // Empty array so tab still shows
+      }
+
+      try {
+        const titlesData = await getXboxTitleHistory(authHeaderValue, userXuid);
+        console.log('Title history loaded:', { count: titlesData.length, titles: titlesData.slice(0, 3) });
+        setRecentTitles(titlesData);
+      } catch (titlesError) {
+        console.error('Could not load title history:', titlesError);
+        setRecentTitles([]);
       }
     } catch (err) {
       console.error('Error loading Xbox data:', err);
@@ -130,27 +142,9 @@ export default function Home() {
                   </span>
                 </div>
                 {profile && (
-                  <div className="flex items-center gap-3 mt-2">
-                    {profile.displayPicRaw && (
-                      <img 
-                        src={profile.displayPicRaw} 
-                        alt={`${profile.gamertag}'s profile`}
-                        className="w-10 h-10 rounded-full border-2 border-green-500 shadow-lg"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = `https://avatar-ssl.xboxlive.com/avatar/${profile.xuid}/avatar-body.png`;
-                        }}
-                      />
-                    )}
-                    <p className="text-gray-300 text-base font-semibold">
-                      <span className="text-green-400">@</span>{profile.gamertag}
-                    </p>
-                    {profile.gamerscore !== undefined && (
-                      <span className="px-3 py-1 bg-yellow-600 text-white text-sm font-extrabold rounded flex items-center gap-1 shadow-lg">
-                        <span>⭐</span>
-                        {profile.gamerscore.toLocaleString()}
-                      </span>
-                    )}
-                  </div>
+                  <p className="text-gray-300 text-base font-semibold mt-2">
+                    <span className="text-green-400">@</span>{profile.gamertag}
+                  </p>
                 )}
               </div>
             </div>
@@ -285,17 +279,312 @@ export default function Home() {
             </button>
           </div>
         ) : (
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Left Sidebar - Statistics */}
-            <div className="lg:w-96 flex-shrink-0">
-              <div className="lg:sticky lg:top-8">
-                <StatisticsDashboard clips={clips} screenshots={screenshots} />
-              </div>
-            </div>
+          <div>
+            {activeTab === 'dashboard' ? (
+              /* Dashboard Landing Page */
+              <div className="space-y-6">
+                {/* Welcome Hero Section with Quick Actions */}
+                <div className="bg-gradient-to-r from-green-900 via-blue-900 to-purple-900 rounded-xl p-6 border border-green-500 shadow-xl">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-4">
+                      {profile?.displayPicRaw && (
+                        <img 
+                          src={profile.displayPicRaw} 
+                          alt={`${profile.gamertag}'s profile`}
+                          className="w-20 h-20 rounded-full border-4 border-green-400 shadow-xl"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = `https://avatar-ssl.xboxlive.com/avatar/${profile.xuid}/avatar-body.png`;
+                          }}
+                        />
+                      )}
+                      <h1 className="text-3xl font-bold text-white">
+                        Welcome back, {profile?.gamertag}! 🎮
+                      </h1>
+                    </div>
+                    {profile?.gamerscore !== undefined && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-300">Gamerscore:</span>
+                        <span className="text-4xl font-bold text-yellow-400">
+                          {profile.gamerscore.toLocaleString()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  {/* Quick Actions */}
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      onClick={() => setActiveTab('clips')}
+                      className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-colors"
+                    >
+                      🤖 Create AI Compilation
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('screenshots')}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
+                    >
+                      📸 Browse Screenshots
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('achievements')}
+                      className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg font-semibold transition-colors"
+                    >
+                      🏆 View Achievements
+                    </button>
+                  </div>
+                </div>
 
-            {/* Right Content - Tabs and Grid */}
-            <div className="flex-1 min-w-0">
-              <div className="flex space-x-4 mb-8 border-b border-gray-700">
+                {/* Two-Column Layout: Game Stats (Left) + Feature Cards (Right) */}
+                <div className="flex flex-col lg:flex-row gap-6">
+                  {/* Game Stats Dashboard - Vertical Sidebar */}
+                  {recentTitles && recentTitles.length > 0 && (
+                    <div className="lg:w-96 flex-shrink-0">
+                      <div className="bg-gradient-to-br from-green-900 to-teal-900 rounded-xl p-5 border border-green-500 shadow-lg">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="text-4xl">📊</div>
+                          <div>
+                            <h2 className="text-xl font-bold text-white">Game Stats</h2>
+                            <p className="text-green-200 text-xs">Your progress across games</p>
+                          </div>
+                        </div>
+                        
+                        {/* Vertical Stats List */}
+                        <div className="space-y-4">
+                          {recentTitles.slice(0, 6).map((title) => {
+                            const currentAch = title.achievement?.currentAchievements || 0;
+                            const currentScore = title.achievement?.currentGamerscore || 0;
+                            const totalScore = title.achievement?.totalGamerscore || 0;
+                            const completionPct = title.achievement?.progressPercentage || 0;
+                            const totalAch = completionPct > 0 && currentAch > 0 
+                              ? Math.round(currentAch / (completionPct / 100))
+                              : (title.achievement?.totalAchievements || 0);
+                            
+                            return (
+                              <div key={title.titleId} className="bg-gray-800 bg-opacity-60 rounded-lg p-3 border border-green-700">
+                                <div className="flex items-center gap-3 mb-3">
+                                  {title.displayImage && (
+                                    <img
+                                      src={title.displayImage}
+                                      alt={title.name}
+                                      className="w-12 h-16 object-cover rounded border border-gray-600 flex-shrink-0"
+                                    />
+                                  )}
+                                  <div className="flex-1 min-w-0">
+                                    <h3 className="font-bold text-white text-sm truncate mb-1">{title.name}</h3>
+                                    <div className="text-xs text-green-400 font-semibold">{completionPct}% Complete</div>
+                                  </div>
+                                </div>
+                                
+                                <div className="space-y-2">
+                                  {/* Achievement Progress Bar */}
+                                  <div>
+                                    <div className="flex justify-between text-xs text-gray-300 mb-1">
+                                      <span>Achievements</span>
+                                      <span className="font-semibold text-yellow-400">{currentAch}/{totalAch}</span>
+                                    </div>
+                                    <div className="w-full bg-gray-700 rounded-full h-2">
+                                      <div
+                                        className="bg-gradient-to-r from-yellow-500 to-orange-500 h-2 rounded-full transition-all"
+                                        style={{ width: `${completionPct}%` }}
+                                      ></div>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Gamerscore */}
+                                  <div className="flex justify-between text-xs">
+                                    <span className="text-gray-300">Gamerscore</span>
+                                    <span className="font-bold text-yellow-400">
+                                      ⭐ {currentScore}<span className="text-gray-400">/{totalScore}</span>
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Feature Cards Grid */}
+                  <div className="flex-1">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Recent Activity Card */}
+                  <div className="md:col-span-2 bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-6 border border-gray-600 shadow-xl">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="text-4xl">⚡</div>
+                      <div>
+                        <h3 className="text-2xl font-bold text-white">Recent Activity</h3>
+                        <p className="text-gray-300 text-sm">Your latest captures</p>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {/* Recent Screenshots */}
+                      {screenshots.slice(0, 2).map((screenshot) => (
+                        <div
+                          key={screenshot.screenshotId}
+                          onClick={() => setActiveTab('screenshots')}
+                          className="group cursor-pointer"
+                        >
+                          <div className="relative rounded-lg overflow-hidden border-2 border-gray-700 hover:border-blue-500 transition-all">
+                            <img
+                              src={screenshot.thumbnails?.[0]?.uri || screenshot.contentLocators?.[0]?.uri}
+                              alt="Screenshot"
+                              className="w-full aspect-video object-cover group-hover:scale-110 transition-transform"
+                            />
+                            <div className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold">
+                              📸
+                            </div>
+                          </div>
+                          <div className="mt-2">
+                            <p className="text-xs text-gray-400 truncate">{screenshot.titleName}</p>
+                            <p className="text-xs text-gray-500">
+                              {new Date(screenshot.dateTaken).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {/* Recent Clips */}
+                      {clips.slice(0, 2).map((clip) => (
+                        <div
+                          key={clip.gameClipId}
+                          onClick={() => setActiveTab('clips')}
+                          className="group cursor-pointer"
+                        >
+                          <div className="relative rounded-lg overflow-hidden border-2 border-gray-700 hover:border-purple-500 transition-all">
+                            <img
+                              src={clip.thumbnails?.[0]?.uri}
+                              alt="Clip thumbnail"
+                              className="w-full aspect-video object-cover group-hover:scale-110 transition-transform"
+                            />
+                            <div className="absolute top-2 right-2 bg-purple-600 text-white px-2 py-1 rounded text-xs font-bold">
+                              🎬
+                            </div>
+                            <div className="absolute bottom-2 left-2 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-xs">
+                              {Math.floor(clip.durationInSeconds / 60)}:{String(clip.durationInSeconds % 60).padStart(2, '0')}
+                            </div>
+                          </div>
+                          <div className="mt-2">
+                            <p className="text-xs text-gray-400 truncate">{clip.titleName}</p>
+                            <p className="text-xs text-gray-500">
+                              {new Date(clip.dateRecorded).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {screenshots.length === 0 && clips.length === 0 && (
+                      <div className="text-center py-8 text-gray-400">
+                        <p>No recent activity. Start capturing your gaming moments!</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Screenshots Card */}
+                  <div
+                    onClick={() => setActiveTab('screenshots')}
+                    className="bg-gradient-to-br from-blue-900 to-blue-800 rounded-xl p-6 border border-blue-500 hover:border-blue-400 transition-all cursor-pointer transform hover:scale-105 shadow-xl group"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="text-6xl">📸</div>
+                      <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">
+                        {screenshots.length}
+                      </div>
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-300 transition-colors">
+                      Screenshots
+                    </h3>
+                    <p className="text-blue-200">
+                      View, download, and manage your captured gaming moments
+                    </p>
+                  </div>
+
+                  {/* Clips Card */}
+                  <div
+                    onClick={() => setActiveTab('clips')}
+                    className="bg-gradient-to-br from-purple-900 to-purple-800 rounded-xl p-6 border border-purple-500 hover:border-purple-400 transition-all cursor-pointer transform hover:scale-105 shadow-xl group"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="text-6xl">🎬</div>
+                      <div className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-bold">
+                        {clips.length}
+                      </div>
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
+                      Game Clips
+                    </h3>
+                    <p className="text-purple-200">
+                      Stream your gameplay videos and create highlight compilations
+                    </p>
+                  </div>
+
+                  {/* AI Compilations Card */}
+                  <div
+                    onClick={() => setActiveTab('compilations')}
+                    className="bg-gradient-to-br from-pink-900 to-purple-900 rounded-xl p-6 border border-pink-500 hover:border-pink-400 transition-all cursor-pointer transform hover:scale-105 shadow-xl group relative overflow-hidden"
+                  >
+                    <div className="absolute top-0 right-0 bg-yellow-500 text-black px-3 py-1 text-xs font-bold rounded-bl-lg">
+                      AI POWERED
+                    </div>
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="text-6xl">🤖</div>
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-pink-300 transition-colors">
+                      Compilations
+                    </h3>
+                    <p className="text-pink-200">
+                      AI-generated highlight reels from your best gaming moments
+                    </p>
+                  </div>
+
+                  {/* Achievements Card */}
+                  <div
+                    onClick={() => setActiveTab('achievements')}
+                    className="bg-gradient-to-br from-yellow-900 to-orange-900 rounded-xl p-6 border border-yellow-500 hover:border-yellow-400 transition-all cursor-pointer transform hover:scale-105 shadow-xl group"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="text-6xl">🏆</div>
+                      <div className="bg-yellow-600 text-white px-3 py-1 rounded-full text-sm font-bold">
+                        {achievements.length}
+                      </div>
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-yellow-300 transition-colors">
+                      Achievements
+                    </h3>
+                    <p className="text-yellow-200">
+                      Recent unlocks with rarity ratings and gamerscore
+                    </p>
+                  </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col lg:flex-row gap-8">
+                {/* Left Sidebar - Statistics */}
+                <div className="lg:w-96 flex-shrink-0">
+                  <div className="lg:sticky lg:top-8">
+                    <StatisticsDashboard clips={clips} screenshots={screenshots} />
+                  </div>
+                </div>
+
+                {/* Right Content - Tabs and Grid */}
+                <div className="flex-1 min-w-0">
+                  {/* Back to Dashboard Button */}
+                  <button
+                    onClick={() => setActiveTab('dashboard')}
+                    className="mb-6 flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Back to Dashboard
+                  </button>
+
+                  <div className="flex space-x-4 mb-8 border-b border-gray-700">
                 <button
                   onClick={() => setActiveTab('screenshots')}
                   className={`px-6 py-3 font-semibold transition ${
@@ -347,7 +636,9 @@ export default function Home() {
               ) : (
                 <AchievementsGrid achievements={achievements} />
               )}
-            </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </main>

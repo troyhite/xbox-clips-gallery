@@ -105,6 +105,28 @@ export interface XboxAchievement {
   };
 }
 
+export interface XboxTitle {
+  titleId: string;
+  name: string;
+  displayImage?: string;
+  achievement?: {
+    currentAchievements: number;
+    totalAchievements: number;
+    currentGamerscore: number;
+    totalGamerscore: number;
+  };
+  titleHistory?: {
+    lastTimePlayed: string;
+    visible: boolean;
+  };
+  detail?: {
+    description?: string;
+    shortDescription?: string;
+  };
+  modernTitleId?: string;
+  platformCapabilities?: string[];
+}
+
 /**
  * Get Xbox user token from Microsoft access token
  */
@@ -207,6 +229,26 @@ export async function getXboxAchievements(authHeader: string, xuid: string): Pro
     count: data.achievements?.length || 0
   });
   return data.achievements || [];
+}
+
+/**
+ * Get user's recently played Xbox titles
+ */
+export async function getXboxTitleHistory(authHeader: string, xuid: string): Promise<XboxTitle[]> {
+  const response = await fetch(`/api/xbox/titlehistory?xuid=${xuid}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${authHeader}`,
+    },
+  });
+
+  if (!response.ok) {
+    console.warn('Failed to fetch Xbox title history');
+    return [];
+  }
+
+  const data = await response.json();
+  return data.titles || [];
 }
 
 /**
