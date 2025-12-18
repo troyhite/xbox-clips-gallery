@@ -39,6 +39,20 @@ A modern web application built with Next.js that allows users to view and downlo
 - ☁️ **Azure Storage Integration** - Secure cloud storage for all compilation videos
 - 🔒 **Secure Downloads** - Proxy-based downloads work seamlessly with Azure AD authentication
 
+### Twitch Integration
+- 🔐 **Twitch OAuth Authentication** - Connect your Twitch account with secure OAuth flow
+- 🎬 **Twitch Clips Gallery** - Browse and download your Twitch clips with sort options (by date or views)
+- 🔴 **Live Stream Monitor** - Real-time detection when you go live on Twitch
+  - Automatic stream status checking (60-second polling)
+  - Stream information display (game, title, viewers, uptime)
+  - Live thumbnail preview
+- ✂️ **Instant Highlight Clips** - Create clips from your live stream with one click (captures last 30 seconds)
+- 📊 **Cross-Platform Analytics** - Compare your Xbox and Twitch statistics side-by-side
+  - Total clips and views comparison
+  - Top games across both platforms
+  - Unified analytics dashboard
+- 🎮 **Dashboard Integration** - Twitch connection status and clips counter on main dashboard
+
 ## Prerequisites
 
 Before running this application, you need:
@@ -46,8 +60,9 @@ Before running this application, you need:
 1. **Node.js** (v18 or higher)
 2. **Microsoft Azure Account** - To create an app registration
 3. **Xbox Live Account** - To access your media
-4. **Azure Video Indexer** - For AI-powered compilation features (optional)
-5. **Azure Storage Account** - For storing compilation videos (optional)
+4. **Twitch Account** - For Twitch integration features (optional)
+5. **Azure Video Indexer** - For AI-powered compilation features (optional)
+6. **Azure Storage Account** - For storing compilation videos (optional)
 
 ## Setup Instructions
 
@@ -80,14 +95,33 @@ Before running this application, you need:
 npm install
 ```
 
-### 4. Configure Environment Variables
+### 4. Create Twitch App (Optional)
 
-1. Edit `.env.local` and add your Azure credentials:
+To enable Twitch integration:
+
+1. Go to [Twitch Developer Console](https://dev.twitch.tv/console/apps)
+2. Click **Register Your Application**
+3. Fill in:
+   - **Name**: Xbox Clips Gallery
+   - **OAuth Redirect URLs**: `http://localhost:3000/twitch/callback` (add production URL later)
+   - **Category**: Website Integration
+4. Click **Create**
+5. Copy the **Client ID** - you'll need this
+6. Click **New Secret** to generate a Client Secret
+
+### 5. Configure Environment Variables
+
+1. Edit `.env.local` and add your credentials:
    ```
-   # Authentication
+   # Microsoft Authentication
    NEXT_PUBLIC_AZURE_CLIENT_ID=your_client_id_here
    NEXT_PUBLIC_AZURE_TENANT_ID=common
    NEXT_PUBLIC_REDIRECT_URI=http://localhost:3000
+   
+   # Twitch Integration (Optional)
+   NEXT_PUBLIC_TWITCH_CLIENT_ID=your_twitch_client_id
+   TWITCH_CLIENT_SECRET=your_twitch_client_secret
+   NEXT_PUBLIC_TWITCH_REDIRECT_URI=http://localhost:3000/twitch/callback
    
    # Video Indexer (Optional - for AI compilation features)
    VIDEO_INDEXER_ACCOUNT_ID=your_video_indexer_account_id
@@ -103,7 +137,7 @@ npm install
    VIDEO_COMPILATION_SERVICE_URL=your_compilation_service_url
    ```
 
-### 5. Run the Development Server
+### 6. Run the Development Server
 
 ```bash
 npm run dev
@@ -139,6 +173,7 @@ The dashboard is your central hub with:
   - Total clips (with count badge)
   - AI compilations created (with count badge)
   - Achievement stats
+  - Twitch integration (with connection status and clips counter)
 
 ### Basic Gallery Usage
 
@@ -174,6 +209,48 @@ The dashboard is your central hub with:
    - Confirm deletion in the modal dialog
 5. **Refresh**: Click the refresh button to reload the list
 
+### Twitch Features
+
+#### Connecting Your Twitch Account
+1. Click the **Connect Twitch** button in the header
+2. Authenticate with your Twitch account
+3. Authorize the requested permissions
+4. You'll be redirected back to the app with Twitch connected
+5. Your Twitch profile picture will appear in the header next to the Connect button
+
+#### Viewing Twitch Clips
+1. Navigate to the **Twitch Clips** tab
+2. Browse all your Twitch clips with thumbnails and metadata
+3. Sort clips by:
+   - **Date** - Most recent clips first
+   - **Views** - Most popular clips first
+4. Click any clip thumbnail to open it in a new tab on Twitch
+5. View count displayed on each clip
+
+#### Live Stream Monitoring
+1. Navigate to the **🔴 Live Stream** tab
+2. When offline, you'll see instructions on how the feature works
+3. When you go live on Twitch:
+   - The app automatically detects your stream (checks every 60 seconds)
+   - Stream information displays:
+     - Live thumbnail preview
+     - Red "LIVE" badge
+     - Current viewer count
+     - Game being played
+     - Stream uptime
+     - Stream tags
+4. Click **Create Highlight Clip** to capture the last 30 seconds of your stream
+5. Created clips will appear in your Twitch Clips tab
+
+#### Cross-Platform Analytics
+1. Navigate to the **Analytics** tab
+2. View side-by-side comparison:
+   - **Xbox Stats**: Total clips, views, and top games
+   - **Twitch Stats**: Total clips, views, and top games
+   - **Combined Stats**: Overall metrics across both platforms
+3. See which games you've created the most content for
+4. Track total views and engagement across platforms
+
 ## Project Structure
 
 ```
@@ -190,19 +267,32 @@ The dashboard is your central hub with:
 │   │   │   ├── compilation-status/  # Track compilation progress
 │   │   │   ├── download-compilation/  # Proxy downloads
 │   │   │   └── delete-compilation/    # Delete compilations
+│   │   ├── twitch/            # Twitch API routes
+│   │   │   ├── authenticate/  # Twitch OAuth
+│   │   │   ├── profile/       # Twitch user profile
+│   │   │   ├── clips/         # Twitch clips
+│   │   │   ├── analytics/     # Twitch analytics
+│   │   │   ├── stream-status/ # Check if live streaming
+│   │   │   └── create-clip/   # Create highlight clip
 │   │   └── video-indexer/     # Video Indexer API routes
 │   │       ├── analyze/       # Analyze clips
 │   │       ├── insights/      # Get AI insights
 │   │       └── create-compilation/  # Generate compilations
-│   ├── layout.tsx         # Root layout with MSAL provider
-│   └── page.tsx          # Main dashboard with tabs and Game Stats
+│   ├── twitch/
+│   │   └── callback/          # Twitch OAuth callback page
+│   ├── layout.tsx             # Root layout with MSAL provider
+│   └── page.tsx               # Main dashboard with tabs and Game Stats
 ├── components/
-│   ├── AuthButton.tsx         # Sign in/out button with profile
-│   ├── ClipsGrid.tsx          # Video clips gallery
+│   ├── AuthButton.tsx         # Xbox sign in/out button with profile
+│   ├── TwitchAuthButton.tsx   # Twitch sign in button with profile
+│   ├── ClipsGrid.tsx          # Xbox video clips gallery
+│   ├── TwitchClipsGrid.tsx    # Twitch clips gallery with sorting
 │   ├── ScreenshotGrid.tsx     # Screenshots gallery
 │   ├── CompilationsGrid.tsx   # Compilations gallery with multi-select
 │   ├── AchievementsGrid.tsx   # Xbox achievements display
 │   ├── StatisticsDashboard.tsx # Gaming statistics overview
+│   ├── TwitchAnalyticsDashboard.tsx # Cross-platform analytics
+│   ├── LiveStreamMonitor.tsx  # Twitch live stream monitoring
 │   ├── HighlightsPanel.tsx    # AI insights and compilation creation
 │   ├── CompilationStatusModal.tsx  # Real-time compilation progress
 │   ├── DeleteConfirmationModal.tsx # Custom delete confirmation
@@ -210,6 +300,8 @@ The dashboard is your central hub with:
 ├── lib/
 │   ├── msalConfig.ts     # MSAL authentication config
 │   ├── xboxApi.ts        # Xbox API client functions
+│   ├── twitchConfig.ts   # Twitch configuration
+│   ├── twitchApi.ts      # Twitch API client class
 │   └── appInsights.ts    # Application Insights telemetry
 └── .env.local            # Environment variables (not in git)
 ```
