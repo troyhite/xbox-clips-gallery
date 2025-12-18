@@ -6,19 +6,21 @@ import AuthButton from '@/components/AuthButton';
 import ScreenshotGrid from '@/components/ScreenshotGrid';
 import ClipsGrid from '@/components/ClipsGrid';
 import CompilationsGrid from '@/components/CompilationsGrid';
+import AchievementsGrid from '@/components/AchievementsGrid';
 import StatisticsDashboard from '@/components/StatisticsDashboard';
-import { getXboxToken, getXboxProfile, getXboxClips, getXboxScreenshots, XboxClip, XboxScreenshot, XboxProfile } from '@/lib/xboxApi';
+import { getXboxToken, getXboxProfile, getXboxClips, getXboxScreenshots, getXboxAchievements, XboxClip, XboxScreenshot, XboxProfile, XboxAchievement } from '@/lib/xboxApi';
 import { loginRequest } from '@/lib/msalConfig';
 
 export default function Home() {
   const { instance, accounts } = useMsal();
   const isAuthenticated = useIsAuthenticated();
-  const [activeTab, setActiveTab] = useState<'screenshots' | 'clips' | 'compilations'>('screenshots');
+  const [activeTab, setActiveTab] = useState<'screenshots' | 'clips' | 'compilations' | 'achievements'>('screenshots');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [profile, setProfile] = useState<XboxProfile | null>(null);
   const [screenshots, setScreenshots] = useState<XboxScreenshot[]>([]);
   const [clips, setClips] = useState<XboxClip[]>([]);
+  const [achievements, setAchievements] = useState<XboxAchievement[]>([]);
 
   useEffect(() => {
     if (isAuthenticated && accounts.length > 0) {
@@ -28,6 +30,7 @@ export default function Home() {
       setProfile(null);
       setScreenshots([]);
       setClips([]);
+      setAchievements([]);
       setError(null);
     }
   }, [isAuthenticated, accounts]);
@@ -75,6 +78,15 @@ export default function Home() {
 
       setScreenshots(screenshotsData);
       setClips(clipsData);
+      
+      // Try to get achievements (optional - don't fail if it doesn't work)
+      try {
+        const achievementsData = await getXboxAchievements(authHeaderValue, userXuid);
+        setAchievements(achievementsData);
+      } catch (achievementsError) {
+        console.warn('Could not load achievements:', achievementsError);
+        setAchievements([]); // Empty array so tab still shows
+      }
     } catch (err) {
       console.error('Error loading Xbox data:', err);
       setError(err instanceof Error ? err.message : 'Failed to load Xbox data');
@@ -85,30 +97,65 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-900">
-      <header className="bg-gray-800 shadow-lg">
-        <div className="container mx-auto px-4 py-6">
+      <header className="relative bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 shadow-2xl border-b-4 border-green-500 overflow-hidden">
+        {/* Animated background pattern - Enhanced */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-green-500 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/2 right-1/4 w-80 h-80 bg-blue-500 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-1/2 left-1/2 w-72 h-72 bg-purple-500 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        </div>
+        
+        {/* Xbox logo pattern overlay */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-2 right-12 text-[180px] font-black text-green-400 transform rotate-12 select-none" style={{ textShadow: '0 0 60px rgba(34, 197, 94, 0.5)' }}>X</div>
+          <div className="absolute bottom-0 left-8 text-[140px] select-none filter drop-shadow-[0_0_40px_rgba(59,130,246,0.6)]">🎮</div>
+        </div>
+        
+        <div className="container mx-auto px-4 py-6 relative z-10">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            {/* Left: Logo and Title */}
+            <div className="flex items-center gap-6">
+              <div className="bg-gradient-to-br from-green-600 to-blue-600 p-4 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
+                <svg className="w-10 h-10 text-white" viewBox="0 0 23 23" fill="currentColor">
+                  <path d="M0 0h11v11H0zm12 0h11v11H12zM0 12h11v11H0zm12 0h11v11H12z"/>
+                </svg>
+              </div>
               <div>
-                <h1 className="text-3xl font-bold text-white">Xbox Media Gallery</h1>
+                <div className="flex items-center gap-3">
+                  <h1 className="text-3xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+                    Xbox Media Gallery
+                  </h1>
+                  <span className="px-3 py-1 bg-green-600 text-white text-sm font-extrabold rounded-full shadow-lg">
+                    LIVE
+                  </span>
+                </div>
                 {profile && (
-                  <div className="flex items-center gap-2 mt-1">
+                  <div className="flex items-center gap-3 mt-2">
                     {profile.displayPicRaw && (
                       <img 
                         src={profile.displayPicRaw} 
                         alt={`${profile.gamertag}'s profile`}
-                        className="w-8 h-8 rounded-full border-2 border-gray-600"
+                        className="w-10 h-10 rounded-full border-2 border-green-500 shadow-lg"
                         onError={(e) => {
-                          // Fallback to default avatar if image fails to load
                           (e.target as HTMLImageElement).src = `https://avatar-ssl.xboxlive.com/avatar/${profile.xuid}/avatar-body.png`;
                         }}
                       />
                     )}
-                    <p className="text-gray-400">Welcome, {profile.gamertag}!</p>
+                    <p className="text-gray-300 text-base font-semibold">
+                      <span className="text-green-400">@</span>{profile.gamertag}
+                    </p>
+                    {profile.gamerscore !== undefined && (
+                      <span className="px-3 py-1 bg-yellow-600 text-white text-sm font-extrabold rounded flex items-center gap-1 shadow-lg">
+                        <span>⭐</span>
+                        {profile.gamerscore.toLocaleString()}
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
             </div>
+            
+            {/* Right: Auth Button */}
             <AuthButton />
           </div>
         </div>
@@ -279,14 +326,26 @@ export default function Home() {
                 >
                   Compilations 🎬
                 </button>
+                <button
+                  onClick={() => setActiveTab('achievements')}
+                  className={`px-6 py-3 font-semibold transition ${
+                    activeTab === 'achievements'
+                      ? 'text-blue-500 border-b-2 border-blue-500'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  Achievements ({achievements.length}) 🏆
+                </button>
               </div>
 
               {activeTab === 'screenshots' ? (
                 <ScreenshotGrid screenshots={screenshots} />
               ) : activeTab === 'clips' ? (
                 <ClipsGrid clips={clips} />
-              ) : (
+              ) : activeTab === 'compilations' ? (
                 <CompilationsGrid />
+              ) : (
+                <AchievementsGrid achievements={achievements} />
               )}
             </div>
           </div>

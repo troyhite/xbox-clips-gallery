@@ -18,6 +18,7 @@ export default function CompilationsGrid() {
   const [error, setError] = useState<string | null>(null);
   const [selectedCompilations, setSelectedCompilations] = useState<Set<string>>(new Set());
   const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [playingVideo, setPlayingVideo] = useState<string | null>(null);
 
   const fetchCompilations = async () => {
     try {
@@ -191,16 +192,21 @@ export default function CompilationsGrid() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold">
-          {compilations.length} Compilation{compilations.length !== 1 ? 's' : ''}
-          {selectedCompilations.size > 0 && (
-            <span className="ml-2 text-sm text-blue-400">
-              ({selectedCompilations.size} selected)
-            </span>
-          )}
-        </h3>
-        <div className="flex gap-2">
+      {/* Compilations Header */}
+      <div className="bg-gradient-to-r from-purple-900 to-indigo-900 rounded-lg p-6 border border-purple-500">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-3xl font-bold text-white mb-1">🎬 Your Compilations</h2>
+            <p className="text-purple-200">
+              {compilations.length} AI-generated highlight reel{compilations.length !== 1 ? 's' : ''}
+              {selectedCompilations.size > 0 && (
+                <span className="ml-2 text-blue-300 font-semibold">
+                  • {selectedCompilations.size} selected
+                </span>
+              )}
+            </p>
+          </div>
+          <div className="flex gap-2">
           {!isSelectionMode ? (
             <>
               <button
@@ -240,12 +246,15 @@ export default function CompilationsGrid() {
               )}
             </>
           )}
+          </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {compilations.map((compilation) => {
           const isSelected = selectedCompilations.has(compilation.name);
+          const isPlaying = playingVideo === compilation.name;
+          
           return (
             <div
               key={compilation.name}
@@ -264,15 +273,68 @@ export default function CompilationsGrid() {
                 </div>
               )}
               <div 
-                className="aspect-video bg-gray-900 flex items-center justify-center cursor-pointer"
-                onClick={() => isSelectionMode && toggleSelection(compilation.name)}
+                className="aspect-video bg-gray-900 flex items-center justify-center cursor-pointer relative group overflow-hidden"
+                onClick={() => {
+                  if (isSelectionMode) {
+                    toggleSelection(compilation.name);
+                  } else {
+                    if (!isPlaying) {
+                      setPlayingVideo(compilation.name);
+                    }
+                  }
+                }}
               >
+                {/* Video thumbnail */}
                 <video
                   src={compilation.url}
-                  controls
-                  preload="metadata"
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-cover"
+                  preload="auto"
+                  playsInline
+                  muted
+                  disablePictureInPicture
+                  onLoadedData={(e) => {
+                    // Pause immediately to show as thumbnail
+                    e.currentTarget.pause();
+                  }}
                 />
+                
+                {/* Full video player modal when playing */}
+                {isPlaying && (
+                  <div className="fixed inset-0 bg-black bg-opacity-95 z-50 flex items-center justify-center p-4"
+                    onClick={(e) => {
+                      if (e.target === e.currentTarget) {
+                        setPlayingVideo(null);
+                      }
+                    }}
+                  >
+                    <div className="relative w-full max-w-6xl">
+                      <video
+                        src={compilation.url}
+                        controls
+                        autoPlay
+                        className="w-full rounded-lg"
+                        onEnded={() => setPlayingVideo(null)}
+                      />
+                      <button
+                        onClick={() => setPlayingVideo(null)}
+                        className="absolute top-4 right-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Play Button Overlay (hidden when playing) */}
+                {!isPlaying && !isSelectionMode && (
+                  <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center group-hover:bg-opacity-60 transition-all pointer-events-none">
+                    <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center transform group-hover:scale-110 transition-transform">
+                      <svg className="w-8 h-8 text-gray-900 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                      </svg>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="p-4 space-y-2">
                 <p className="font-medium text-sm truncate" title={compilation.name}>

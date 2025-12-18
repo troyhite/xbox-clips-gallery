@@ -67,6 +67,42 @@ export interface XboxProfile {
   gamertag: string;
   displayPicRaw: string;
   realName?: string;
+  gamerscore?: number;
+}
+
+export interface XboxAchievement {
+  id: string;
+  name: string;
+  description: string;
+  mediaAssets: Array<{
+    name: string;
+    type: string;
+    url: string;
+  }>;
+  isSecret: boolean;
+  progressState: string;
+  progression: {
+    timeUnlocked: string;
+  };
+  rewards: Array<{
+    name: string;
+    description: string;
+    value: string;
+    type: string;
+    mediaAsset: {
+      name: string;
+      type: string;
+      url: string;
+    };
+  }>;
+  titleAssociations: Array<{
+    name: string;
+    id: number;
+  }>;
+  rarity: {
+    currentCategory: string;
+    currentPercentage: number;
+  };
 }
 
 /**
@@ -143,6 +179,34 @@ export async function getXboxScreenshots(authHeader: string, xuid: string): Prom
 
   const data = await response.json();
   return data.screenshots || [];
+}
+
+/**
+ * Get user's recent Xbox achievements
+ */
+export async function getXboxAchievements(authHeader: string, xuid: string): Promise<XboxAchievement[]> {
+  const response = await fetch(`/api/xbox/achievements?xuid=${xuid}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${authHeader}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    console.error('Failed to fetch Xbox achievements:', {
+      status: response.status,
+      statusText: response.statusText,
+      errorData
+    });
+    throw new Error(`Failed to fetch Xbox achievements: ${response.status} ${errorData.error || response.statusText}`);
+  }
+
+  const data = await response.json();
+  console.log('Achievements data received:', {
+    count: data.achievements?.length || 0
+  });
+  return data.achievements || [];
 }
 
 /**
