@@ -2,6 +2,12 @@ name: Deploy to Azure
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.vscode/**'
+      - '.github/**'
+      - '!.github/workflows/**'
   workflow_dispatch:
 
 jobs:
