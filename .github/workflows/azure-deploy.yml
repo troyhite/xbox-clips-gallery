@@ -31,6 +31,8 @@ jobs:
           NEXT_PUBLIC_AZURE_TENANT_ID: consumers
           NEXT_PUBLIC_REDIRECT_URI: https://xbox-clips-gallery.azurewebsites.net
           NEXT_PUBLIC_APPINSIGHTS_CONNECTION_STRING: ${{ secrets.NEXT_PUBLIC_APPINSIGHTS_CONNECTION_STRING }}
+          NEXT_PUBLIC_TWITCH_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_TWITCH_CLIENT_ID }}
+          NEXT_PUBLIC_TWITCH_REDIRECT_URI: https://xbox-clips-gallery.azurewebsites.net/twitch/callback
         run: npm run build
       
       - name: Create deployment package
