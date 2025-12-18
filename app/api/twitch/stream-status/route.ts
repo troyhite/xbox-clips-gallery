@@ -12,7 +12,8 @@ export async function GET(request: NextRequest) {
     }
 
     const accessToken = authHeader.substring(7);
-    const client = new TwitchApiClient(accessToken);
+    const clientId = process.env.NEXT_PUBLIC_TWITCH_CLIENT_ID!;
+    const client = new TwitchApiClient(accessToken, clientId);
 
     // Get user info first
     const user = await client.getUser();
