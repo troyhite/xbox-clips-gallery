@@ -329,13 +329,19 @@ export default function Home() {
                       onClick={() => setActiveTab('clips')}
                       className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-colors"
                     >
-                      🤖 Create AI Compilation
+                      🎬 View Clips
                     </button>
                     <button
                       onClick={() => setActiveTab('screenshots')}
                       className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
                     >
                       📸 Browse Screenshots
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('compilations')}
+                      className="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-semibold transition-colors"
+                    >
+                      🤖 Create AI Compilation
                     </button>
                     <button
                       onClick={() => setActiveTab('achievements')}
