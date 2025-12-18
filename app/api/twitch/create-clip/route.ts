@@ -12,7 +12,8 @@ export async function POST(request: NextRequest) {
     }
 
     const accessToken = authHeader.substring(7);
-    const client = new TwitchApiClient(accessToken);
+    const clientId = process.env.NEXT_PUBLIC_TWITCH_CLIENT_ID!;
+    const client = new TwitchApiClient(accessToken, clientId);
 
     // Create a clip from the current live stream or recent VOD
     const result = await client.createClip();
