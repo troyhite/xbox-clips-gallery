@@ -181,21 +181,21 @@ export default function Home() {
           <div className="absolute bottom-0 left-8 text-[140px] select-none filter drop-shadow-[0_0_40px_rgba(59,130,246,0.6)]">🎮</div>
         </div>
         
-        <div className="container mx-auto px-4 py-6 relative z-10">
-          <div className="flex items-center justify-between">
+        <div className="container mx-auto px-4 py-4 sm:py-6 relative z-10">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             {/* Left: Logo and Title */}
-            <div className="flex items-center gap-6">
-              <div className="bg-gradient-to-br from-green-600 to-blue-600 p-4 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
-                <svg className="w-10 h-10 text-white" viewBox="0 0 23 23" fill="currentColor">
+            <div className="flex items-center gap-3 sm:gap-6">
+              <div className="bg-gradient-to-br from-green-600 to-blue-600 p-3 sm:p-4 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
+                <svg className="w-8 h-8 sm:w-10 sm:h-10 text-white" viewBox="0 0 23 23" fill="currentColor">
                   <path d="M0 0h11v11H0zm12 0h11v11H12zM0 12h11v11H0zm12 0h11v11H12z"/>
                 </svg>
               </div>
               <div>
-                <div className="flex items-center gap-3">
-                  <h1 className="text-3xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
                     Xbox Media Gallery
                   </h1>
-                  <span className="px-3 py-1 bg-green-600 text-white text-sm font-extrabold rounded-full shadow-lg">
+                  <span className="px-2 sm:px-3 py-1 bg-green-600 text-white text-xs sm:text-sm font-extrabold rounded-full shadow-lg">
                     LIVE
                   </span>
                 </div>
@@ -203,9 +203,9 @@ export default function Home() {
             </div>
             
             {/* Right: Gamertag and Auth Buttons */}
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4">
               {profile && (
-                <p className="text-gray-300 text-base font-semibold">
+                <p className="text-gray-300 text-sm sm:text-base font-semibold">
                   <span className="text-green-400">@</span>{profile.gamertag}
                 </p>
               )}
