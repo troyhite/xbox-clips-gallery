@@ -552,18 +552,18 @@ export default function Home() {
                   {/* Screenshots Card */}
                   <div
                     onClick={() => setActiveTab('screenshots')}
-                    className="bg-gradient-to-br from-blue-900 to-blue-800 rounded-xl p-6 border border-blue-500 hover:border-blue-400 transition-all cursor-pointer transform hover:scale-105 shadow-xl group"
+                    className="bg-gradient-to-br from-blue-900 to-blue-800 rounded-xl p-4 sm:p-6 border border-blue-500 hover:border-blue-400 transition-all cursor-pointer transform sm:hover:scale-105 shadow-xl group active:scale-95 min-h-[140px]"
                   >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="text-6xl">📸</div>
+                    <div className="flex items-start justify-between mb-3 sm:mb-4">
+                      <div className="text-4xl sm:text-6xl">📸</div>
                       <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">
                         {screenshots.length}
                       </div>
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-300 transition-colors">
+                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 group-hover:text-blue-300 transition-colors">
                       Screenshots
                     </h3>
-                    <p className="text-blue-200">
+                    <p className="text-sm sm:text-base text-blue-200">
                       View, download, and manage your captured gaming moments
                     </p>
                   </div>
@@ -571,18 +571,18 @@ export default function Home() {
                   {/* Clips Card */}
                   <div
                     onClick={() => setActiveTab('clips')}
-                    className="bg-gradient-to-br from-purple-900 to-purple-800 rounded-xl p-6 border border-purple-500 hover:border-purple-400 transition-all cursor-pointer transform hover:scale-105 shadow-xl group"
+                    className="bg-gradient-to-br from-purple-900 to-purple-800 rounded-xl p-4 sm:p-6 border border-purple-500 hover:border-purple-400 transition-all cursor-pointer transform sm:hover:scale-105 shadow-xl group active:scale-95 min-h-[140px]"
                   >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="text-6xl">🎬</div>
+                    <div className="flex items-start justify-between mb-3 sm:mb-4">
+                      <div className="text-4xl sm:text-6xl">🎬</div>
                       <div className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-bold">
                         {clips.length}
                       </div>
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
+                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
                       Game Clips
                     </h3>
-                    <p className="text-purple-200">
+                    <p className="text-sm sm:text-base text-purple-200">
                       Stream your gameplay videos and create highlight compilations
                     </p>
                   </div>
@@ -590,21 +590,21 @@ export default function Home() {
                   {/* AI Compilations Card */}
                   <div
                     onClick={() => setActiveTab('compilations')}
-                    className="bg-gradient-to-br from-pink-900 to-purple-900 rounded-xl p-6 border border-pink-500 hover:border-pink-400 transition-all cursor-pointer transform hover:scale-105 shadow-xl group relative overflow-hidden"
+                    className="bg-gradient-to-br from-pink-900 to-purple-900 rounded-xl p-4 sm:p-6 border border-pink-500 hover:border-pink-400 transition-all cursor-pointer transform sm:hover:scale-105 shadow-xl group relative overflow-hidden active:scale-95 min-h-[140px]"
                   >
-                    <div className="absolute top-0 right-0 bg-yellow-500 text-black px-3 py-1 text-xs font-bold rounded-bl-lg">
+                    <div className="absolute top-0 right-0 bg-yellow-500 text-black px-2 sm:px-3 py-1 text-xs font-bold rounded-bl-lg">
                       AI POWERED
                     </div>
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="text-6xl">🤖</div>
+                    <div className="flex items-start justify-between mb-3 sm:mb-4">
+                      <div className="text-4xl sm:text-6xl">🤖</div>
                       <div className="bg-pink-600 text-white px-3 py-1 rounded-full text-sm font-bold">
                         {compilationsCount}
                       </div>
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-pink-300 transition-colors">
+                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 group-hover:text-pink-300 transition-colors">
                       Compilations
                     </h3>
-                    <p className="text-pink-200">
+                    <p className="text-sm sm:text-base text-pink-200">
                       AI-generated highlight reels from your best gaming moments
                     </p>
                   </div>
@@ -612,10 +612,10 @@ export default function Home() {
                   {/* Achievements Card */}
                   <div
                     onClick={() => setActiveTab('achievements')}
-                    className="bg-gradient-to-br from-yellow-900 to-orange-900 rounded-xl p-6 border border-yellow-500 hover:border-yellow-400 transition-all cursor-pointer transform hover:scale-105 shadow-xl group"
+                    className="bg-gradient-to-br from-yellow-900 to-orange-900 rounded-xl p-4 sm:p-6 border border-yellow-500 hover:border-yellow-400 transition-all cursor-pointer transform sm:hover:scale-105 shadow-xl group active:scale-95 min-h-[140px]"
                   >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="text-6xl">🏆</div>
+                    <div className="flex items-start justify-between mb-3 sm:mb-4">
+                      <div className="text-4xl sm:text-6xl">🏆</div>
                       <div className="bg-yellow-600 text-white px-3 py-1 rounded-full text-sm font-bold">
                         {achievements.length}
                       </div>
@@ -631,17 +631,17 @@ export default function Home() {
                   {/* Twitch Card */}
                   <div
                     onClick={() => setActiveTab(twitchConnected ? 'live-stream' : 'twitch-clips')}
-                    className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl p-6 border border-purple-400 hover:border-purple-300 transition-all cursor-pointer transform hover:scale-105 shadow-xl group relative"
+                    className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl p-4 sm:p-6 border border-purple-400 hover:border-purple-300 transition-all cursor-pointer transform sm:hover:scale-105 shadow-xl group relative active:scale-95 min-h-[140px]"
                   >
                     {twitchConnected && (
-                      <div className="absolute top-0 right-0 bg-green-500 text-white px-3 py-1 text-xs font-bold rounded-bl-lg flex items-center gap-1">
+                      <div className="absolute top-0 right-0 bg-green-500 text-white px-2 sm:px-3 py-1 text-xs font-bold rounded-bl-lg flex items-center gap-1">
                         <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
                         CONNECTED
                       </div>
                     )}
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="text-6xl">
-                        <svg className="w-16 h-16" viewBox="0 0 24 24" fill="currentColor">
+                    <div className="flex items-start justify-between mb-3 sm:mb-4">
+                      <div className="text-4xl sm:text-6xl">
+                        <svg className="w-12 h-12 sm:w-16 sm:h-16" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
                         </svg>
                       </div>
@@ -651,10 +651,10 @@ export default function Home() {
                         </div>
                       )}
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-purple-200 transition-colors">
+                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 group-hover:text-purple-200 transition-colors">
                       {twitchConnected ? `Twitch` : 'Connect Twitch'}
                     </h3>
-                    <p className="text-purple-100">
+                    <p className="text-sm sm:text-base text-purple-100">
                       {twitchConnected 
                         ? `@${twitchUsername} • Monitor streams & create clips`
                         : 'Link your Twitch account to monitor streams and clips'
@@ -688,7 +688,8 @@ export default function Home() {
                     Back to Dashboard
                   </button>
 
-                  <div className="flex flex-wrap gap-2 sm:gap-4 mb-8 border-b border-gray-700">
+                  <div className="sticky top-0 z-20 bg-gray-900 py-2 -mx-4 px-4 sm:mx-0 sm:px-0 mb-6 sm:mb-8">
+                  <div className="flex flex-wrap gap-2 sm:gap-4 border-b border-gray-700">
                 <button
                   onClick={() => setActiveTab('screenshots')}
                   className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-semibold transition ${
@@ -762,6 +763,7 @@ export default function Home() {
                 >
                   🔴 Live Stream
                 </button>
+              </div>
               </div>
 
               {activeTab === 'screenshots' ? (
