@@ -345,34 +345,34 @@ export default function Home() {
               /* Dashboard Landing Page */
               <div className="space-y-6">
                 {/* Welcome Hero Section with Quick Actions */}
-                <div className="bg-gradient-to-r from-green-900 via-blue-900 to-purple-900 rounded-xl p-6 border border-green-500 shadow-xl">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-4">
+                <div className="bg-gradient-to-r from-green-900 via-blue-900 to-purple-900 rounded-xl p-4 sm:p-6 border border-green-500 shadow-xl">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+                    <div className="flex items-center gap-3 sm:gap-4">
                       {profile?.displayPicRaw && (
                         <img 
                           src={profile.displayPicRaw} 
                           alt={`${profile.gamertag}'s profile`}
-                          className="w-20 h-20 rounded-full border-4 border-green-400 shadow-xl"
+                          className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-green-400 shadow-xl"
                           onError={(e) => {
                             (e.target as HTMLImageElement).src = `https://avatar-ssl.xboxlive.com/avatar/${profile.xuid}/avatar-body.png`;
                           }}
                         />
                       )}
-                      <h1 className="text-3xl font-bold text-white">
+                      <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">
                         Welcome back, {profile?.gamertag}! 🎮
                       </h1>
                     </div>
                     {profile?.gamerscore !== undefined && (
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-300">Gamerscore:</span>
-                        <span className="text-4xl font-bold text-yellow-400">
+                        <span className="text-sm sm:text-base text-gray-300">Gamerscore:</span>
+                        <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-400">
                           {profile.gamerscore.toLocaleString()}
                         </span>
                       </div>
                     )}
                   </div>
                   {/* Quick Actions */}
-                  <div className="flex flex-wrap gap-3">
+                  <div className="flex flex-wrap gap-2 sm:gap-3">
                     <button
                       onClick={() => setActiveTab('twitch-clips')}
                       className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-semibold transition-colors"
