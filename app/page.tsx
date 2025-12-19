@@ -688,10 +688,10 @@ export default function Home() {
                     Back to Dashboard
                   </button>
 
-                  <div className="flex space-x-4 mb-8 border-b border-gray-700">
+                  <div className="flex flex-wrap gap-2 sm:gap-4 mb-8 border-b border-gray-700">
                 <button
                   onClick={() => setActiveTab('screenshots')}
-                  className={`px-6 py-3 font-semibold transition ${
+                  className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-semibold transition ${
                     activeTab === 'screenshots'
                       ? 'text-blue-500 border-b-2 border-blue-500'
                       : 'text-gray-400 hover:text-white'
@@ -701,7 +701,7 @@ export default function Home() {
                 </button>
                 <button
                   onClick={() => setActiveTab('clips')}
-                  className={`px-6 py-3 font-semibold transition ${
+                  className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-semibold transition ${
                     activeTab === 'clips'
                       ? 'text-blue-500 border-b-2 border-blue-500'
                       : 'text-gray-400 hover:text-white'
@@ -711,20 +711,20 @@ export default function Home() {
                 </button>
                 <button
                   onClick={() => setActiveTab('twitch-clips')}
-                  className={`px-6 py-3 font-semibold transition flex items-center gap-2 ${
+                  className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-semibold transition flex items-center gap-2 ${
                     activeTab === 'twitch-clips'
                       ? 'text-purple-500 border-b-2 border-purple-500'
                       : 'text-gray-400 hover:text-white'
                   }`}
                 >
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
                   </svg>
                   Twitch Clips
                 </button>
                 <button
                   onClick={() => setActiveTab('compilations')}
-                  className={`px-6 py-3 font-semibold transition ${
+                  className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-semibold transition ${
                     activeTab === 'compilations'
                       ? 'text-blue-500 border-b-2 border-blue-500'
                       : 'text-gray-400 hover:text-white'
@@ -734,7 +734,7 @@ export default function Home() {
                 </button>
                 <button
                   onClick={() => setActiveTab('achievements')}
-                  className={`px-6 py-3 font-semibold transition ${
+                  className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-semibold transition ${
                     activeTab === 'achievements'
                       ? 'text-blue-500 border-b-2 border-blue-500'
                       : 'text-gray-400 hover:text-white'
@@ -744,7 +744,7 @@ export default function Home() {
                 </button>
                 <button
                   onClick={() => setActiveTab('analytics')}
-                  className={`px-6 py-3 font-semibold transition ${
+                  className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-semibold transition ${
                     activeTab === 'analytics'
                       ? 'text-blue-500 border-b-2 border-blue-500'
                       : 'text-gray-400 hover:text-white'
@@ -754,7 +754,7 @@ export default function Home() {
                 </button>
                 <button
                   onClick={() => setActiveTab('live-stream')}
-                  className={`px-6 py-3 font-semibold transition ${
+                  className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-semibold transition ${
                     activeTab === 'live-stream'
                       ? 'text-red-500 border-b-2 border-red-500'
                       : 'text-gray-400 hover:text-white'
