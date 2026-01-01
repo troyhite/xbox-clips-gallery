@@ -15,11 +15,12 @@ import { loginRequest } from '@/lib/msalConfig';
 import TwitchClipsGrid from '@/components/TwitchClipsGrid';
 import TwitchAnalyticsDashboard from '@/components/TwitchAnalyticsDashboard';
 import LiveStreamMonitor from '@/components/LiveStreamMonitor';
+import Battlefield6Stats from '@/components/Battlefield6Stats';
 
 export default function Home() {
   const { instance, accounts } = useMsal();
   const isAuthenticated = useIsAuthenticated();
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'screenshots' | 'clips' | 'twitch-clips' | 'compilations' | 'achievements' | 'analytics' | 'live-stream'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'screenshots' | 'clips' | 'twitch-clips' | 'compilations' | 'achievements' | 'analytics' | 'live-stream' | 'bf6-stats'>('dashboard');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [profile, setProfile] = useState<XboxProfile | null>(null);
@@ -763,6 +764,16 @@ export default function Home() {
                 >
                   🔴 Live Stream
                 </button>
+                <button
+                  onClick={() => setActiveTab('bf6-stats')}
+                  className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-semibold transition ${
+                    activeTab === 'bf6-stats'
+                      ? 'text-green-500 border-b-2 border-green-500'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  🎮 BF6 Stats
+                </button>
               </div>
               </div>
 
@@ -782,6 +793,14 @@ export default function Home() {
                 />
               ) : activeTab === 'live-stream' ? (
                 <LiveStreamMonitor />
+              ) : activeTab === 'bf6-stats' ? (
+                profile?.gamertag ? (
+                  <Battlefield6Stats gamertag={profile.gamertag} />
+                ) : (
+                  <div className="text-center text-gray-400">
+                    <p>No gamertag available</p>
+                  </div>
+                )
               ) : (
                 <AchievementsGrid achievements={achievements} />
               )}
